@@ -27,16 +27,7 @@ const MusicPlayer = () => {
     };
   }, [isPlaying]);
 
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch(() => {});
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
+
 
   const toggleMode = () => {
     const nextMode = mode === '8bit' ? 'lofi' : '8bit';
@@ -55,8 +46,8 @@ const MusicPlayer = () => {
 
   // We use standard HTML5 audio to prevent YouTube ads
   const audioSrc = mode === '8bit' 
-    ? `${import.meta.env.BASE_URL}music_8bit.mp3` 
-    : `${import.meta.env.BASE_URL}music_lofi.mp3`;
+    ? `${import.meta.env.BASE_URL}music_8bit.m4a` 
+    : `${import.meta.env.BASE_URL}music_lofi.m4a`;
 
   return (
     <div className="music-player-widget">
@@ -68,8 +59,8 @@ const MusicPlayer = () => {
       />
       
       <div className="music-controls-container">
-        <div className="music-icon pulse-animation" onClick={togglePlay} style={{ cursor: 'pointer' }} title="Play/Pause">
-          {isPlaying ? '🎧' : '⏸️'}
+        <div className="music-icon pulse-animation" title="Música">
+          🎧
         </div>
         
         <div className="music-controls">

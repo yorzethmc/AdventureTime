@@ -125,12 +125,12 @@ const App = () => {
 
   return (
     <>
-      <GameBackground />
+      <GameBackground currentStep={currentStep} />
       <MusicPlayer />
       <div className="scanlines" />
-      <div className="app-container" onClick={handleInteraction}>
+      <div className="app-container screen-enter" key={`step-${currentStep}`} onClick={handleInteraction}>
         {currentStep > 0 && currentStep !== 3 && currentStep !== 9 && (
-          <div className="status-bar">
+          <div className="status-bar fade-in">
             <span>HP: 100/100</span>
             <span>LVL: 99</span>
             <span>{gameState.avatarId ? 'P1 READY' : 'NO AVATAR'}</span>

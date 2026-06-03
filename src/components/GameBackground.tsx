@@ -14,7 +14,29 @@ interface FloatingObj {
   animation: string;
 }
 
-const GameBackground = () => {
+interface Props {
+  currentStep?: number;
+}
+
+const GameBackground = ({ currentStep = 0 }: Props) => {
+  const getBgImage = () => {
+    const base = import.meta.env.BASE_URL;
+    switch (currentStep) {
+      case 0: return `${base}backgrounds/bg_splash.png`;
+      case 1: return `${base}backgrounds/bg_avatar.png`;
+      case 2: return `${base}backgrounds/bg_mission.png`;
+      case 3: return `${base}backgrounds/bg_mission.png`; // sad ending
+      case 4: return `${base}backgrounds/bg_transport.png`;
+      case 5: return `${base}backgrounds/bg_time.png`;
+      case 6: return `${base}backgrounds/bg_transport.png`; // destinations
+      case 7: return `${base}backgrounds/bg_fuel.png`;
+      case 8: return `${base}backgrounds/bg_fuel.png`; // boss battle
+      case 9: return `${base}backgrounds/bg_summary.png`;
+      default: return `${base}backgrounds/bg_splash.png`;
+    }
+  };
+
+  const bgImage = getBgImage();
   const objects = useMemo<FloatingObj[]>(() => {
     const items: FloatingObj[] = [];
 
@@ -55,10 +77,13 @@ const GameBackground = () => {
   }, []);
 
   return (
-    <div className="game-bg">
-      <div className="orb a"></div>
-      <div className="orb b"></div>
-      <div className="gridbg"></div>
+    <div className="game-bg" style={{
+      backgroundImage: `url(${bgImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      transition: 'background-image 0.8s ease-in-out'
+    }}>
+      <div className="gridbg" style={{ opacity: 0.25 }}></div>
 
       {/* Twinkling pixel stars */}
       {stars.map(s => (

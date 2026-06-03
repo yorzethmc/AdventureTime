@@ -9,7 +9,7 @@ export const initAudio = () => {
   }
 };
 
-const playTone = (freq: number, type: OscillatorType, duration: number, vol = 0.1) => {
+export const playTone = (freq: number, type: OscillatorType, duration: number, vol = 0.1) => {
   if (!audioCtx) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
