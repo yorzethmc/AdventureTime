@@ -1,4 +1,4 @@
-import { filterFuel, calculateRemainingGold } from '../data/gameData';
+import { filterFuel, calculateRemainingGold, avatarOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
@@ -10,8 +10,8 @@ interface Props {
 }
 
 const Fuel = ({ onNext, gameState, updateState }: Props) => {
-  const currentGold = calculateRemainingGold(gameState.transportId, gameState.destId, null); // Gold before paying for fuel
-  const availableFuels = filterFuel(gameState.destId);
+  const currentGold = calculateRemainingGold(gameState.transportId, gameState.destId, null, gameState.haggleDiscount); // Gold before paying for fuel
+  const availableFuels = filterFuel(gameState.destId, gameState.inventoryId);
 
   const handleSelect = (id: string, cost: number) => {
     if (currentGold < cost) {
@@ -29,12 +29,15 @@ const Fuel = ({ onNext, gameState, updateState }: Props) => {
     }
   };
 
+  const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
+  const narrativeText = avatar?.dialogues?.fuel || "El camino es largo y nuestros puntos de magia (MP) se agotarán. ¿Qué raciones nos darán la energía para continuar?";
+
   return (
     <div className="rpg-panel fade-in">
       <h2>Combustible</h2>
       
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
-        <Typewriter text="El camino es largo y nuestros puntos de magia (MP) se agotarán. ¿Qué raciones nos darán la energía para continuar?" speed={30} />
+        <Typewriter text={narrativeText} speed={30} />
       </div>
       
       <div className="cards-grid">

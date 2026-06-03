@@ -2,9 +2,13 @@ import { useState, useCallback } from 'react';
 import { sfxClick, sfxBuzz } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
 
+import { avatarOptions } from '../data/gameData';
+import type { GameState } from '../App';
+
 interface Props {
   onAccept: () => void;
   onReject: () => void;
+  gameState: GameState;
 }
 
 const evasivePhrases = [
@@ -19,7 +23,7 @@ const evasivePhrases = [
   "Última oportunidad antes del modo drama."
 ];
 
-const MissionBriefing = ({ onAccept, onReject }: Props) => {
+const MissionBriefing = ({ onAccept, onReject, gameState }: Props) => {
   const [rejectAttempts, setRejectAttempts] = useState(0);
   const [rejectPhrase, setRejectPhrase] = useState("");
   const [btnPosition, setBtnPosition] = useState<{ x: number; y: number } | null>(null);
@@ -82,13 +86,16 @@ const MissionBriefing = ({ onAccept, onReject }: Props) => {
 
   const gameOver = rejectAttempts >= 9;
 
+  const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
+  const narrativeText = avatar?.dialogues?.briefing || "Hay misiones que no aparecen todos los días. Esta fue preparada con cuidado, un poco de magia retro y una intención muy simple: invitarte a una cita diferente. Si aceptás, vas a elegir el camino, la hora, el destino y el combustible de esta aventura.";
+
   return (
     <div className="rpg-panel fade-in">
       <h2 style={{ color: 'var(--text-highlight)' }}>Mission Briefing</h2>
 
       <div className="text-pixel mb-3" style={{ fontSize: '0.8rem', lineHeight: '1.8' }}>
         <Typewriter 
-            text="Hay misiones que no aparecen todos los días. Esta fue preparada con cuidado, un poco de magia retro y una intención muy simple: invitarte a una cita diferente. Si aceptás, vas a elegir el camino, la hora, el destino y el combustible de esta aventura."
+            text={narrativeText}
             speed={35}
             onComplete={() => setShowButtons(true)}
         />

@@ -1,4 +1,4 @@
-import { inventoryOptions } from '../data/gameData';
+import { inventoryOptions, avatarOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
@@ -22,12 +22,15 @@ const Inventory = ({ onNext, gameState, updateState }: Props) => {
     }
   };
 
+  const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
+  const narrativeText = avatar?.dialogues?.inventory || "Antes de salir de casa, elige un objeto o acompañante. Tu decisión afectará los planes disponibles más adelante.";
+
   return (
     <div className="rpg-panel fade-in">
       <h2>Equipamiento Inicial</h2>
       
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
-        <Typewriter text="Antes de salir de casa, elige un objeto o acompañante. Tu decisión afectará los planes disponibles más adelante." speed={30} />
+        <Typewriter text={narrativeText} speed={30} />
       </div>
 
       <div className="cards-grid">

@@ -9,7 +9,17 @@ export const avatarOptions = [
     emoji: '🪄',
     code: 'Hechizo de Curiosidad',
     desc: 'Ideal para quien desbloquea aventuras con una sonrisa.',
-    image: `${base}avatars/maga.png`
+    image: `${base}avatars/maga.png`,
+    dialogues: {
+      briefing: 'Siento una anomalía mágica muy interesante en el mapa. ¿Me acompañas a investigar este misterio?',
+      inventory: 'Necesitaremos canalizadores arcanos. Escoge bien tu amuleto para esta expedición.',
+      weather: 'Las fluctuaciones atmosféricas afectan el maná. Dime, ¿cómo están los elementos allá afuera?',
+      transport: 'Un portal sería más rápido, pero elijamos un vehículo mundano para disfrutar el paisaje.',
+      datetime: 'El flujo del tiempo es crucial para la hechicería. ¿En qué ciclo nos encontraremos?',
+      destinations: 'He revelado puntos de alta energía en mi mapa estelar. Selecciona nuestro destino.',
+      sideQuests: 'Percibo un eco mágico cercano... ¿Deberíamos investigar antes de seguir la ruta principal?',
+      fuel: 'Mis reservas de maná están bajando. Requerimos consumir alguna poción revitalizante o postre.'
+    }
   },
   {
     id: 'explorer',
@@ -17,7 +27,17 @@ export const avatarOptions = [
     emoji: '🗺️',
     code: 'Ruta Desconocida',
     desc: 'Lista para descubrir lugares, historias y planes inesperados.',
-    image: `${base}avatars/exploradora.png`
+    image: `${base}avatars/exploradora.png`,
+    dialogues: {
+      briefing: '¡Encontré un nuevo territorio sin cartografiar! Prepara tu mochila porque vamos de expedición.',
+      inventory: 'Todo buen explorador lleva su equipo de supervivencia. ¿Qué será esencial para hoy?',
+      weather: 'Un buen aventurero no le teme al clima, pero siempre revisa el pronóstico. ¿Cómo está el cielo?',
+      transport: 'Necesitamos movilidad. ¿En qué vehículo cruzaremos las fronteras de lo conocido?',
+      datetime: 'Quien madruga atrapa a la presa, ¡pero la noche también es emocionante! ¿A qué hora salimos?',
+      destinations: 'Tengo las coordenadas listas. Señala en el mapa hacia dónde nos dirigimos.',
+      sideQuests: 'Vi algo curioso fuera de nuestra ruta marcada. ¿Hacemos un desvío de exploración?',
+      fuel: '¡Tanta caminata da hambre! Busquemos la mejor ración local para recuperar energía.'
+    }
   },
   {
     id: 'princess_random',
@@ -25,7 +45,17 @@ export const avatarOptions = [
     emoji: '👑',
     code: 'Modo Sorpresa',
     desc: 'Elegante, impredecible y con bonus de encanto.',
-    image: `${base}avatars/princesa.png`
+    image: `${base}avatars/princesa.png`,
+    dialogues: {
+      briefing: 'El aburrimiento del castillo es terrible. ¡Sácame de aquí y vivamos una aventura muy random!',
+      inventory: 'Incluso la realeza necesita accesorios prácticos. ¿Qué llevaremos para no perder el estilo?',
+      weather: 'Espero que el clima no arruine mis planes reales... Asómate por la ventana, plebeyo.',
+      transport: 'Mi carruaje está en mantenimiento. ¿Qué transporte usarás para llevarme?',
+      datetime: 'La puntualidad es virtud de reyes, pero llegar tarde es de divas. Dime la hora exacta.',
+      destinations: 'Cualquier lugar del reino me parece bien, ¡sorpréndeme o elige tú el dominio a visitar!',
+      sideQuests: '¡Uy, espera! Acabo de ver algo súper divertido por allá. ¿Hacemos una pausa rápida?',
+      fuel: '¡Exijo un banquete! O al menos un antojo delicioso para mantener mi energía real.'
+    }
   },
   {
     id: 'gemini',
@@ -33,7 +63,17 @@ export const avatarOptions = [
     emoji: '♊',
     code: 'Doble Naturaleza',
     desc: 'Curiosa, adaptable y con energía inagotable. Perfecta para planes cambiantes y charlas eternas.',
-    image: `${base}avatars/gemini.png`
+    image: `${base}avatars/gemini.png`,
+    dialogues: {
+      briefing: 'A veces quiero un plan súper chill, a veces quiero salir corriendo. ¿Me sigues en esta locura?',
+      inventory: 'Como no me decido, elige tú qué vamos a llevar. Todo me sirve, la verdad.',
+      weather: 'El clima cambia tan rápido como yo de opinión. ¿Lloverá o habrá sol? ¡Todo me encanta!',
+      transport: 'Cualquier opción es buena mientras vayamos conversando. ¿En qué nos vamos?',
+      datetime: '¿De día para tomar café o de noche para algo intenso? Tú pon la hora, yo pongo la plática.',
+      destinations: 'Tengo mil lugares en mente y no me decido por ninguno. ¡Te toca elegir a ti!',
+      sideQuests: 'Literal me acabo de distraer con algo en el camino. ¿Podemos parar un ratito?',
+      fuel: 'Quiero dulce... o tal vez salado. Bueno, ¡comamos algo rico para seguir la charla!'
+    }
   },
   {
     id: 'warrior',
@@ -41,7 +81,17 @@ export const avatarOptions = [
     emoji: '⚔️',
     code: 'Modo Acción',
     desc: 'Guerrera imparable. Disfruta los planes intensos, la comida fuerte y no le teme a ninguna misión.',
-    image: `${base}avatars/warrior.png`
+    image: `${base}avatars/warrior.png`,
+    dialogues: {
+      briefing: 'Has sido convocado para una cruzada. Mi espada está afilada y mi espíritu arde. ¿Aceptas el reto?',
+      inventory: 'Todo buen guerrero prepara su armadura antes de marchar. ¿Qué llevaremos al campo de batalla?',
+      weather: 'Los cielos de batalla cambian rápido. Observa el horizonte y dinos a qué nos enfrentamos.',
+      transport: 'Tu fiel montura te espera. ¿Cómo cruzaremos estas tierras salvajes hasta nuestro destino?',
+      datetime: 'Un guerrero sabe cuándo atacar. Elige el momento táctico para iniciar la expedición.',
+      destinations: 'Los exploradores han marcado estos territorios en el mapa. Elige nuestro próximo frente.',
+      sideQuests: '¿Un pequeño desvío táctico para ganar ventaja antes del encuentro principal?',
+      fuel: 'Un ejército marcha sobre su estómago. ¡Es hora de un banquete digno del Valhalla!'
+    }
   },
   {
     id: 'bard',
@@ -49,15 +99,17 @@ export const avatarOptions = [
     emoji: '🎧',
     code: 'Modo Chill',
     desc: 'Amante de la música, el café a medianoche y las vibras relajadas. Su especialidad es conversar por horas.',
-    image: `${base}avatars/bard.png`
-  },
-  {
-    id: 'druid',
-    name: 'Elfa Botánica',
-    emoji: '🍃',
-    code: 'Conexión Natural',
-    desc: 'Adora los parques, los atardeceres y respirar aire fresco. Si hay árboles cerca, ella es feliz.',
-    image: `${base}avatars/druid.png`
+    image: `${base}avatars/bard.png`,
+    dialogues: {
+      briefing: 'Tengo una playlist perfecta y ganas de fluir. ¿Qué te parece si hacemos algo relajado hoy?',
+      inventory: 'Solo necesitamos buena vibra y algo cómodo. ¿Qué objeto encaja con nuestro mood?',
+      weather: 'Si llueve ponemos lofi, si hay sol ponemos algo chill. ¿Cómo se ve el cielo?',
+      transport: 'El viaje es parte de la melodía. ¿Qué transporte nos dará el mejor ritmo?',
+      datetime: 'No hay prisa. El tiempo fluye a nuestro favor. ¿A qué hora sintonizamos la aventura?',
+      destinations: 'Busquemos un rincón tranquilo donde podamos escuchar buena música y hablar. ¿A dónde vamos?',
+      sideQuests: 'Podemos hacer una paradita técnica para armar una mejor playlist en el camino...',
+      fuel: 'Una buena bebida caliente y un antojo son el estribillo perfecto para esta tarde.'
+    }
   },
   {
     id: 'vampire',
@@ -65,7 +117,17 @@ export const avatarOptions = [
     emoji: '🦇',
     code: 'Criatura de la Noche',
     desc: 'Despierta cuando el sol se oculta. Experta en misiones nocturnas, cenas oscuras y cine clásico.',
-    image: `${base}avatars/vampiresa.png`
+    image: `${base}avatars/vampiresa.png`,
+    dialogues: {
+      briefing: 'He despertado de mi largo sueño solo para invitarte a mis dominios. ¿Me concederás esta eternidad?',
+      inventory: 'Incluso los inmortales necesitamos llevar algún talismán. ¿Qué accesorio profano elegiremos?',
+      weather: 'Espero que las nubes oculten el odioso sol... Observa el cielo por mí, mi querido mortal.',
+      transport: 'Mis alas de murciélago están cansadas hoy. Elijamos un carruaje adecuado para criaturas como nosotros.',
+      datetime: 'La luna nos llama, pero si insistes en desafiar al sol, que sea en el momento adecuado.',
+      destinations: 'Estos lugares tienen un aura tentadora. ¿Dónde derramaremos nuestra presencia esta velada?',
+      sideQuests: 'Un paseo por las sombras antes del evento principal suena exquisitamente tentador...',
+      fuel: 'Siento una sed atroz... y no precisamente de sangre hoy. Es hora de un banquete digno de la nobleza.'
+    }
   },
   {
     id: 'healer_glam',
@@ -73,7 +135,17 @@ export const avatarOptions = [
     emoji: '🎀',
     code: 'Magia Rosa',
     desc: 'Impecable hasta en la mazmorra más sucia. Le encantan los planes bonitos, lugares fotogénicos y salvar el día con estilo.',
-    image: `${base}avatars/fresita.png`
+    image: `${base}avatars/fresita.png`,
+    dialogues: {
+      briefing: '¡Hola, hola! El reino nos necesita, pero eso no significa perder el glamour. ¿Lista para brillar juntos?',
+      inventory: '¡No podemos salir así nada más! Elige el accesorio perfecto para complementar el outfit de la misión.',
+      weather: 'Ojalá no llueva, arruinaría mi peinado... Asómate a la ventana, ¿qué tal pinta el día?',
+      transport: 'Necesitamos llegar intactos y fabulosos. ¿Qué medio de transporte tiene más estilo?',
+      datetime: 'La iluminación es clave para las fotos. ¿A qué hora nos veremos para aprovechar la golden hour?',
+      destinations: '¡Encontré los lugares más cute y fotogénicos en mi mapa rosa! ¿A cuál vamos?',
+      sideQuests: '¡Ay! Vi un lugarcito divino cerca. ¿Hacemos una parada rápida para turistear?',
+      fuel: 'Tanta sanación me dejó sin energía. Vamos por un matcha o algo súper rico para recargar.'
+    }
   },
   {
     id: 'necromancer_goth',
@@ -81,7 +153,17 @@ export const avatarOptions = [
     emoji: '🖤',
     code: 'Conjuro Oscuro',
     desc: 'Sarcástica, misteriosa y viste de negro. Prefiere misiones de noche, cine de terror o planes con estética alternativa.',
-    image: `${base}avatars/gotica.png`
+    image: `${base}avatars/gotica.png`,
+    dialogues: {
+      briefing: 'He convocado espíritus antiguos y todos me dijeron que debía invocarte a ti hoy. ¿Aceptas el pacto?',
+      inventory: 'Las reliquias malditas siempre son útiles. Escoge tu artefacto de perdición favorito.',
+      weather: 'Mientras más gris y lúgubre, mejor para mi alma marchita. Dime, ¿el cielo llora hoy?',
+      transport: 'No traje a mi corcel esquelético, así que tendremos que usar el transporte de los vivos.',
+      datetime: 'La hora de las brujas es la ideal, pero supongo que me adaptaré a tus horarios mundanos.',
+      destinations: 'El inframundo ofrece varios portales. ¿Hacia cuál pozo de desesperación (o diversión) nos dirigimos?',
+      sideQuests: 'Las ánimas murmuran sobre un camino alterno muy peculiar. ¿Nos desviamos hacia las sombras?',
+      fuel: 'Incluso los nigromantes necesitan nutrientes. Encontremos un festín para aplacar este vacío terrenal.'
+    }
   },
   {
     id: 'hunter_athletic',
@@ -89,7 +171,17 @@ export const avatarOptions = [
     emoji: '🏹',
     code: 'Energía Inagotable',
     desc: 'Activa y lista para la acción. Perfecta para caminatas largas, aventuras al aire libre y misiones dinámicas.',
-    image: `${base}avatars/deportista.png`
+    image: `${base}avatars/deportista.png`,
+    dialogues: {
+      briefing: '¡La adrenalina me llama! Preparé una ruta llena de acción y necesito un compañero de aventuras. ¿Te animas?',
+      inventory: 'Un buen explorador revisa su mochila dos veces. ¿Qué equipo nos dará ventaja táctica hoy?',
+      weather: 'No hay mal clima, solo mala preparación. Aunque es bueno saber a qué nos enfrentaremos allá afuera.',
+      transport: 'Mis piernas están listas para correr, pero si está muy lejos, mejor elegimos un transporte eficiente.',
+      datetime: 'Quien madruga atrapa a la presa, ¡pero la noche también tiene lo suyo! ¿A qué hora iniciamos?',
+      destinations: 'El bosque, la ciudad o la montaña; todo es nuestro terreno de caza. ¡Elige nuestro blanco!',
+      sideQuests: '¡Ey! Si corremos un poco podemos cubrir más terreno. ¿Hacemos un desvío rápido?',
+      fuel: '¡Quemar tantas calorías requiere proteínas! Busquemos la mejor ración de combate para recuperar estamina.'
+    }
   }
 ];
 
@@ -143,9 +235,10 @@ export const transportOptions = [
 
 export const inventoryOptions = [
   { id: 'camera', name: 'Cámara Vintage', emoji: '📸', code: 'Aesthetic Mode', desc: 'Promete recuerdos memorables y fotos increíbles.' },
-  { id: 'dog', name: 'Perrito Acompañante', emoji: '🐕', code: 'Modo Pet-Friendly', desc: 'Bloquea el cine, pero abre el camino a lugares abiertos.' },
   { id: 'sunglasses', name: 'Lentes de Sol', emoji: '🕶️', code: 'Modo Diurno', desc: 'Solo planes bajo la luz del sol.' },
-  { id: 'sweater', name: 'Suéter Gigante', emoji: '🧣', code: 'A prueba de frío', desc: 'Permite explorar montañas de noche.' }
+  { id: 'sweater', name: 'Suéter Gigante', emoji: '🧣', code: 'A prueba de frío', desc: 'Permite explorar montañas de noche.' },
+  { id: 'umbrella', name: 'Paraguas Resistente', emoji: '☂️', code: 'Escudo Climático', desc: 'Inmunidad a las penalizaciones por lluvia.' },
+  { id: 'snacks', name: 'Snacks de Emergencia', emoji: '🍫', code: 'Supervivencia', desc: 'Permite saltarse el restaurante si no hay oro.' }
 ];
 
 export const weatherOptions = [
@@ -361,6 +454,15 @@ export const fuelOptions = [
     desc: 'La heroína desbloquea su propio combustible.',
     allowedDestTags: ['all'],
     cost: 0
+  },
+  {
+    id: 'use_snacks',
+    name: 'Usar Snacks',
+    emoji: '🍫',
+    title: 'Ración de Supervivencia',
+    desc: 'Consumir los snacks del inventario. No gasta oro.',
+    allowedDestTags: ['all'],
+    cost: 0
   }
 ];
 
@@ -451,19 +553,21 @@ export const filterMissions = (time: string, transportId: string | null, avatarI
     }
 
     // 3. Inventory/Weather filtering
-    if (inventoryId === 'dog' && mission.tags.includes('cine')) return false;
-    if (weatherId === 'rainy' && mission.tags.includes('aventura')) return false;
+    if (weatherId === 'rainy' && mission.tags.includes('aventura') && inventoryId !== 'umbrella') return false;
 
     return timeValid && transportValid;
   });
 };
 
-export const filterFuel = (destId: string | null) => {
-  if (!destId) return fuelOptions;
+export const filterFuel = (destId: string | null, inventoryId: string | null = null) => {
+  if (!destId) return fuelOptions.filter(f => f.id !== 'use_snacks');
   const dest = missionOptions.find(d => d.id === destId);
-  if (!dest) return fuelOptions;
+  if (!dest) return fuelOptions.filter(f => f.id !== 'use_snacks');
 
   return fuelOptions.filter(fuel => {
+    if (fuel.id === 'use_snacks') {
+      return inventoryId === 'snacks';
+    }
     if (fuel.allowedDestTags.includes('all')) return true;
     return dest.tags.some(tag => fuel.allowedDestTags.includes(tag));
   });

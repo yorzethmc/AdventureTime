@@ -1,4 +1,4 @@
-import { dayOptions, isTimeValidForDay } from '../data/gameData';
+import { dayOptions, isTimeValidForDay, avatarOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
@@ -47,12 +47,15 @@ const DateTime = ({ onNext, gameState, updateState }: Props) => {
     }
   };
 
+  const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
+  const narrativeText = avatar?.dialogues?.datetime || "El tiempo en este reino fluye de forma misteriosa. ¿En qué momento deberán encontrarse nuestros héroes?";
+
   return (
     <div className="rpg-panel fade-in">
       <h2>Día y Hora</h2>
       
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
-        <Typewriter text="El tiempo en este reino fluye de forma misteriosa. ¿En qué momento deberán encontrarse nuestros héroes?" speed={30} />
+        <Typewriter text={narrativeText} speed={30} />
       </div>
       
       <div className="cards-grid mb-3">

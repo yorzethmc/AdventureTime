@@ -1,4 +1,4 @@
-import { filterMissions, calculateRemainingGold } from '../data/gameData';
+import { filterMissions, calculateRemainingGold, avatarOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
@@ -11,7 +11,7 @@ interface Props {
 
 const Destinations = ({ onNext, gameState, updateState }: Props) => {
   const availableMissions = filterMissions(gameState.time || '', gameState.transportId, gameState.avatarId);
-  const currentGold = calculateRemainingGold(gameState.transportId, null, gameState.fuelId); // Gold before paying for destination
+  const currentGold = calculateRemainingGold(gameState.transportId, null, gameState.fuelId, gameState.haggleDiscount); // Gold before paying for destination
 
   const handleSelect = (id: string, cost: number) => {
     if (currentGold < cost) {
@@ -29,12 +29,15 @@ const Destinations = ({ onNext, gameState, updateState }: Props) => {
     }
   };
 
+  const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
+  const narrativeText = avatar?.dialogues?.destinations || `El mapa se ha adaptado a la magia de las ${gameState.time}. Revisa las rutas disponibles y elige el rumbo de la expedición.`;
+
   return (
     <div className="rpg-panel fade-in">
       <h2>Selecciona Destino</h2>
       
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
-        <Typewriter text={`El mapa se ha adaptado a la magia de las ${gameState.time}. Revisa las rutas disponibles y elige el rumbo de la expedición.`} speed={30} />
+        <Typewriter text={narrativeText} speed={30} />
       </div>
       
       <div className="cards-grid">

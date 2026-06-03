@@ -123,6 +123,7 @@ const App = () => {
         return <MissionBriefing 
                   onAccept={() => goToStep(4)} 
                   onReject={() => goToStep(3)} 
+                  gameState={gameState}
                />;
       case 3:
         return <SadEnding onRetry={() => goToStep(2)} />;

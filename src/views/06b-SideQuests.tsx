@@ -1,4 +1,4 @@
-import { sideQuestOptions } from '../data/gameData';
+import { sideQuestOptions, avatarOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
@@ -22,12 +22,15 @@ const SideQuests = ({ onNext, gameState, updateState }: Props) => {
     }
   };
 
+  const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
+  const narrativeText = avatar?.dialogues?.sideQuests || "¡La ruta principal está clara! Pero tal vez haya tiempo para un pequeño desvío rápido para mejorar la aventura...";
+
   return (
     <div className="rpg-panel fade-in">
       <h2>Misión Secundaria (Gratuita)</h2>
       
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
-        <Typewriter text="¡La ruta principal está clara! Pero tal vez haya tiempo para un pequeño desvío rápido para mejorar la aventura..." speed={30} />
+        <Typewriter text={narrativeText} speed={30} />
       </div>
 
       <div className="cards-grid">

@@ -1,4 +1,4 @@
-import { transportOptions, calculateRemainingGold } from '../data/gameData';
+import { transportOptions, calculateRemainingGold, avatarOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
@@ -42,12 +42,15 @@ const Transport = ({ onNext, gameState, updateState }: Props) => {
     }
   };
 
+  const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
+  const narrativeText = avatar?.dialogues?.transport || "El viaje es largo y está lleno de misterios. ¿Qué medio de transporte elegiremos para esta travesía?";
+
   return (
     <div className="rpg-panel fade-in">
       <h2>Selecciona Transporte</h2>
       
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
-        <Typewriter text="El viaje es largo y está lleno de misterios. ¿Qué medio de transporte elegiremos para esta travesía?" speed={30} />
+        <Typewriter text={narrativeText} speed={30} />
       </div>
 
       <div className="cards-grid">
