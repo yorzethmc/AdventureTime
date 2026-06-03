@@ -10,7 +10,7 @@ interface Props {
 }
 
 const Destinations = ({ onNext, gameState, updateState }: Props) => {
-  const availableMissions = filterMissions(gameState.time || '', gameState.transportId, gameState.avatarId);
+  const availableMissions = filterMissions(gameState.time || '', gameState.transportId, gameState.avatarId, gameState.inventoryId, gameState.weatherId);
   const currentGold = calculateRemainingGold(gameState.transportId, null, gameState.fuelId, gameState.haggleDiscount); // Gold before paying for destination
 
   const handleSelect = (id: string, cost: number) => {

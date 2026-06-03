@@ -262,7 +262,7 @@ export const missionOptions = [
     code: 'Cráter Legendario',
     desc: 'Una misión de altura, frío rico y paisaje épico.',
     tags: ['aventura', 'naturaleza', 'plan_largo'],
-    periods: ['morning', 'early_afternoon'] as const,
+    periods: ['morning'] as const,
     warnings: ['Llevar abrigo.', 'Mejor con buen clima.', 'Plan recomendado de día.'],
     cost: 30
   },
@@ -284,7 +284,7 @@ export const missionOptions = [
     code: 'Vista Oculta',
     desc: 'Un punto escondido para desbloquear conversación y paisaje.',
     tags: ['atardecer', 'naturaleza', 'plan_corto'],
-    periods: ['early_afternoon', 'evening'] as const,
+    periods: ['early_afternoon', 'late_afternoon'] as const,
     warnings: ['Puede hacer frío.', 'Ideal con cielo despejado.'],
     cost: 10
   },
@@ -295,7 +295,7 @@ export const missionOptions = [
     code: 'Vista Panorámica',
     desc: 'Un mirador con bonus de fotos, aire fresco y charla tranquila.',
     tags: ['atardecer', 'naturaleza', 'plan_corto'],
-    periods: ['early_afternoon', 'evening'] as const,
+    periods: ['early_afternoon', 'late_afternoon'] as const,
     warnings: ['Llevar abrigo.', 'Mejor antes de que oscurezca demasiado.'],
     cost: 10
   },
@@ -306,7 +306,7 @@ export const missionOptions = [
     code: 'Checkpoint de Café',
     desc: 'Café, postre y conversación con modo relax activado.',
     tags: ['cafe', 'chill', 'plan_corto'],
-    periods: ['morning', 'early_afternoon', 'evening', 'night'] as const,
+    periods: ['morning', 'early_afternoon', 'late_afternoon', 'evening', 'night'] as const,
     warnings: [],
     cost: 20
   },
@@ -317,7 +317,7 @@ export const missionOptions = [
     code: 'Ruta Sorpresa',
     desc: 'Una cafetería elegida por el destino.',
     tags: ['cafe', 'sorpresa', 'chill', 'plan_corto'],
-    periods: ['morning', 'early_afternoon', 'evening', 'night'] as const,
+    periods: ['morning', 'early_afternoon', 'late_afternoon', 'evening', 'night'] as const,
     warnings: [],
     cost: 15
   },
@@ -350,7 +350,7 @@ export const missionOptions = [
     code: 'Combo Anime',
     desc: 'Sushi, estética bonita y vibra de episodio especial.',
     tags: ['comida', 'cena', 'anime', 'chill'],
-    periods: ['early_afternoon', 'evening', 'night'] as const,
+    periods: ['late_afternoon', 'evening', 'night'] as const,
     warnings: [],
     cost: 40
   },
@@ -361,7 +361,7 @@ export const missionOptions = [
     code: 'Screening Room',
     desc: 'Misión en la oscuridad con bonus de palomitas.',
     tags: ['chill', 'cine', 'cena'],
-    periods: ['early_afternoon', 'evening', 'night'] as const,
+    periods: ['late_afternoon', 'evening', 'night'] as const,
     warnings: [],
     cost: 30
   },
@@ -372,7 +372,7 @@ export const missionOptions = [
     code: 'Ruta Secreta',
     desc: 'La protagonista propone una misión personalizada.',
     tags: ['sorpresa'],
-    periods: ['morning', 'early_afternoon', 'evening', 'night'] as const,
+    periods: ['morning', 'early_afternoon', 'late_afternoon', 'evening', 'night'] as const,
     warnings: [],
     cost: 0
   },
@@ -394,7 +394,7 @@ export const missionOptions = [
     code: 'Dimensión Dual',
     desc: 'Un café oculto donde puedes hablar por horas, saltar de un tema a otro y disfrutar de postres de dos sabores.',
     tags: ['easter_egg', 'cafe', 'chill'],
-    periods: ['morning', 'early_afternoon', 'evening', 'night'] as const,
+    periods: ['morning', 'early_afternoon', 'late_afternoon', 'evening', 'night'] as const,
     warnings: ['Cuidado con la sobreestimulación de cafeína.', 'Solo para Géminis.'],
     cost: 0
   }
@@ -503,12 +503,13 @@ export const getTimePeriod = (time: string): string => {
   const hour = parseInt(time.split(':')[0], 10);
   if (hour < 12) return 'morning';
   if (hour < 15) return 'early_afternoon';
+  if (hour < 18) return 'late_afternoon';
   if (hour < 20) return 'evening';
   return 'night';
 };
 
 // Period ordering for "this period or later" matching
-const periodOrder = ['morning', 'early_afternoon', 'evening', 'night'];
+const periodOrder = ['morning', 'early_afternoon', 'late_afternoon', 'evening', 'night'];
 
 // Filter missions: only show missions whose periods include the current period
 // This means at 18:00 (evening), volcanes (morning/early_afternoon only) are hidden
