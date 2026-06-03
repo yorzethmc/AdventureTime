@@ -10,6 +10,7 @@ interface Props {
 }
 
 const Victory = ({ gameState, onRestart }: Props) => {
+  const [showEasterEgg, setShowEasterEgg] = useState(false);
   const [successRate] = useState(() => {
     const hash = (gameState.avatarId?.length || 0) + (gameState.transportId?.length || 0) + (gameState.destId?.length || 0);
     let rate = 85 + (hash % 15);
@@ -49,8 +50,49 @@ Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
 
   const whatsappLink = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(whatsappText)}`;
 
+  if (showEasterEgg) {
+    return (
+      <div className="rpg-panel fade-in flex-column flex-center" style={{ position: 'relative', height: '100%', borderColor: '#ff66c4', boxShadow: '0 0 30px rgba(255, 102, 196, 0.5)' }}>
+        <h1 style={{ color: '#ff66c4', fontSize: '2rem', animation: 'pulse 0.5s infinite', textAlign: 'center' }}>¡CONGA!</h1>
+        <h2 style={{ color: '#e2e8f0', fontSize: '1rem', marginTop: '10px' }}>¡Easter Egg Desbloqueado!</h2>
+        
+        <div className="mt-3" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <img src="https://emoji.discord.st/emojis/b7ef40c8-03ac-4367-9543-d705f48892e3.gif" alt="Ditto" width="100" />
+          <img src="https://emoji.discord.st/emojis/b7ef40c8-03ac-4367-9543-d705f48892e3.gif" alt="Ditto" width="100" />
+          <img src="https://emoji.discord.st/emojis/b7ef40c8-03ac-4367-9543-d705f48892e3.gif" alt="Ditto" width="100" />
+        </div>
+
+        <button className="btn-retro mt-3" onClick={() => setShowEasterEgg(false)} style={{ backgroundColor: '#ff66c4', color: '#000', textShadow: 'none' }}>
+          Volver a la Misión
+        </button>
+
+        <iframe 
+          src="https://www.youtube.com/embed/54ItE1G_4rE?autoplay=1&loop=1&playlist=54ItE1G_4rE" 
+          style={{ display: 'none' }} 
+          allow="autoplay" 
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="rpg-panel fade-in text-center" style={{ borderColor: 'var(--success)', boxShadow: '0 0 20px rgba(81, 207, 102, 0.5)' }}>
+    <div className="rpg-panel fade-in text-center" style={{ position: 'relative', borderColor: 'var(--success)', boxShadow: '0 0 20px rgba(81, 207, 102, 0.5)' }}>
+      {/* Botón secreto en la esquina superior derecha */}
+      <div 
+        onClick={() => setShowEasterEgg(true)}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '40px',
+          height: '40px',
+          cursor: 'pointer',
+          zIndex: 100,
+          opacity: 0
+        }}
+        title="?"
+      />
+
       <h1 style={{ color: 'var(--success)', fontSize: '2rem', animation: 'float 2s infinite, pulse 2s infinite' }}>CITA DESBLOQUEADA</h1>
       
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
