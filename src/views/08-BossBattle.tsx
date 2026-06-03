@@ -80,10 +80,10 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
           </div>
         </li>
         <li className="inventory-item">
-          <div className="icon">{fuel?.emoji}</div>
+          <div className="icon">{fuel ? fuel.emoji : '🍽️'}</div>
           <div className="details">
             <strong>Combustible</strong>
-            <span className="text-pixel" style={{ fontSize: '0.7rem' }}>{fuel?.name}</span>
+            <span className="text-pixel" style={{ fontSize: '0.7rem' }}>{fuel ? fuel.name : 'Incluido en el destino'}</span>
           </div>
         </li>
       </ul>

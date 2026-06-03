@@ -12,38 +12,59 @@ interface Props {
 const AvatarSelection = ({ onNext, gameState, updateState }: Props) => {
   const [viewingAvatarId, setViewingAvatarId] = useState<string | null>(null);
 
-  const handleSelect = (id: string) => {
-    updateState('avatarId', id);
-    sfxSelect();
-  };
-
-  const handleNext = () => {
-    if (gameState.avatarId) {
-      sfxClick();
-      onNext();
-    }
-  };
-
   const handleView = (id: string) => {
     sfxSelect();
     setViewingAvatarId(id);
   };
 
   if (viewingAvatarId) {
-    const avatar = avatarOptions.find(a => a.id === viewingAvatarId);
+    const currentIndex = avatarOptions.findIndex(a => a.id === viewingAvatarId);
+    const avatar = avatarOptions[currentIndex];
+    
     if (!avatar) return null;
+
+    const handlePrev = () => {
+      sfxSelect();
+      const prevIndex = (currentIndex - 1 + avatarOptions.length) % avatarOptions.length;
+      setViewingAvatarId(avatarOptions[prevIndex].id);
+    };
+
+    const handleNext = () => {
+      sfxSelect();
+      const nextIndex = (currentIndex + 1) % avatarOptions.length;
+      setViewingAvatarId(avatarOptions[nextIndex].id);
+    };
+
     return (
       <div className="rpg-panel fade-in flex-column flex-center text-center">
         <h2>Inspeccionando Avatar</h2>
-        <div className="rpg-card" style={{ cursor: 'default', transform: 'none', margin: '20px 0', padding: '20px' }}>
-          {avatar.image ? (
-            <img src={avatar.image} alt={avatar.name} className="avatar-img" style={{ width: '80px', height: '80px' }} />
-          ) : (
-            <div className="emoji" style={{ fontSize: '3rem' }}>{avatar.emoji}</div>
-          )}
-          <div className="title" style={{ fontSize: '1.2rem', marginTop: '10px' }}>{avatar.name}</div>
-          <div className="text-pixel" style={{ color: 'var(--text-highlight)', fontSize: '0.6rem', marginBottom: '10px' }}>{avatar.code}</div>
-          <div className="desc text-pixel" style={{ fontSize: '0.8rem', lineHeight: '1.5' }}>{avatar.desc}</div>
+        <div className="flex-center" style={{ width: '100%', gap: '15px' }}>
+          <button 
+            className="btn-retro" 
+            onClick={handlePrev} 
+            style={{ padding: '10px 15px', fontSize: '1.2rem', minWidth: 'auto' }}
+          >
+            ◀
+          </button>
+          
+          <div className="rpg-card fade-in" key={avatar.id} style={{ cursor: 'default', transform: 'none', margin: '20px 0', padding: '20px', flex: 1, maxWidth: '300px' }}>
+            {avatar.image ? (
+              <img src={avatar.image} alt={avatar.name} className="avatar-img" style={{ width: '80px', height: '80px' }} />
+            ) : (
+              <div className="emoji" style={{ fontSize: '3rem' }}>{avatar.emoji}</div>
+            )}
+            <div className="title" style={{ fontSize: '1.2rem', marginTop: '10px' }}>{avatar.name}</div>
+            <div className="text-pixel" style={{ color: 'var(--text-highlight)', fontSize: '0.6rem', marginBottom: '10px' }}>{avatar.code}</div>
+            <div className="desc text-pixel" style={{ fontSize: '0.8rem', lineHeight: '1.5' }}>{avatar.desc}</div>
+          </div>
+
+          <button 
+            className="btn-retro" 
+            onClick={handleNext} 
+            style={{ padding: '10px 15px', fontSize: '1.2rem', minWidth: 'auto' }}
+          >
+            ▶
+          </button>
         </div>
 
         <div className="flex-column gap-3 mt-3">

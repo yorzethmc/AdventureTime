@@ -31,7 +31,7 @@ Avatar: ${avatar?.name}
 Transporte: ${transport?.name}
 Día: ${day?.name} a las ${gameState.time}
 Misión: ${dest?.dest}
-Combustible: ${fuel?.name}
+Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
 
 🛡️ Probabilidad de Éxito: ${successRate}%
 ⭐ ¡P1 READY!

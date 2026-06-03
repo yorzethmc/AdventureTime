@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './index.css';
 import { initAudio } from './utils/audio';
-import { calculateRemainingGold } from './data/gameData';
+import { calculateRemainingGold, missionOptions } from './data/gameData';
 import GameBackground from './components/GameBackground';
 import MusicPlayer from './components/MusicPlayer';
 
@@ -45,7 +45,6 @@ const App = () => {
     if (savedState && savedStep) {
       try {
         const parsedState = JSON.parse(savedState);
-        const parsedStep = parseInt(savedStep, 10);
         // Only load if not on Splash (or let splash handle "Continuar")
         // We will just load the state silently. If they are on step > 0, we can restore it.
         // Actually, we'll restore state but stay on step 0 to let them choose "Continuar"
@@ -130,7 +129,15 @@ const App = () => {
                />;
       case 6:
         return <Destinations 
-                  onNext={nextStep} 
+                  onNext={() => {
+                    const mission = missionOptions.find(m => m.id === gameState.destId);
+                    if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe'))) {
+                      updateGameState('fuelId', null);
+                      goToStep(8);
+                    } else {
+                      nextStep();
+                    }
+                  }} 
                   gameState={gameState} 
                   updateState={updateGameState} 
                />;

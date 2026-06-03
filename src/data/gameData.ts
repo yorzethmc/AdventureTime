@@ -65,6 +65,31 @@ export const avatarOptions = [
     emoji: '🦇',
     code: 'Criatura de la Noche',
     desc: 'Despierta cuando el sol se oculta. Experta en misiones nocturnas, cenas oscuras y cine clásico.',
+    image: `${base}avatars/vampiresa.png`
+  },
+  {
+    id: 'healer_glam',
+    name: 'Sanadora Aesthetic',
+    emoji: '🎀',
+    code: 'Magia Rosa',
+    desc: 'Impecable hasta en la mazmorra más sucia. Le encantan los planes bonitos, lugares fotogénicos y salvar el día con estilo.',
+    image: `${base}avatars/fresita.png`
+  },
+  {
+    id: 'necromancer_goth',
+    name: 'Nigromante de las Sombras',
+    emoji: '🖤',
+    code: 'Conjuro Oscuro',
+    desc: 'Sarcástica, misteriosa y viste de negro. Prefiere misiones de noche, cine de terror o planes con estética alternativa.',
+    image: `${base}avatars/gotica.png`
+  },
+  {
+    id: 'hunter_athletic',
+    name: 'Cazadora Acrobática',
+    emoji: '🏹',
+    code: 'Energía Inagotable',
+    desc: 'Activa y lista para la acción. Perfecta para caminatas largas, aventuras al aire libre y misiones dinámicas.',
+    image: `${base}avatars/deportista.png`
   }
 ];
 
@@ -75,7 +100,7 @@ export const transportOptions = [
     emoji: '🏍️',
     code: 'Modo Viento',
     desc: 'Ruta con aire fresco, casco equipado y espíritu de aventura.',
-    allowedMissionTags: ['aventura', 'naturaleza', 'atardecer', 'cafe', 'plan_corto'],
+    allowedMissionTags: ['aventura', 'naturaleza', 'atardecer', 'cafe', 'plan_corto', 'comida', 'cena', 'anime', 'cine'],
     cost: 15
   },
   {
