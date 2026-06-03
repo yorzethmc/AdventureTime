@@ -1,4 +1,4 @@
-export const WHATSAPP_PHONE = 'CONFIGURAR_NUMERO_AQUI';
+export const WHATSAPP_PHONE = '50688292124';
 
 const base = import.meta.env.BASE_URL;
 
