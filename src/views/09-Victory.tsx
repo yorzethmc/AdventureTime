@@ -51,6 +51,9 @@ Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
   const whatsappLink = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(whatsappText)}`;
 
   if (showEasterEgg) {
+    // Stop background music
+    window.dispatchEvent(new Event('stopMusic'));
+
     return (
       <div className="rpg-panel fade-in flex-column flex-center" style={{ position: 'relative', height: '100%', borderColor: '#ff66c4', boxShadow: '0 0 30px rgba(255, 102, 196, 0.5)' }}>
         <h1 style={{ color: '#ff66c4', fontSize: '2rem', animation: 'pulse 0.5s infinite', textAlign: 'center' }}>¡CONGA!</h1>

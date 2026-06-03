@@ -21,9 +21,19 @@ const MusicPlayer = () => {
     };
     window.addEventListener('click', handleInteraction, { once: true });
     window.addEventListener('touchstart', handleInteraction, { once: true });
+    
+    const handleStopMusic = () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    };
+    window.addEventListener('stopMusic', handleStopMusic);
+
     return () => {
       window.removeEventListener('click', handleInteraction);
       window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('stopMusic', handleStopMusic);
     };
   }, [isPlaying]);
 
