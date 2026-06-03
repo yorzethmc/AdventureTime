@@ -69,10 +69,10 @@ Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
           Volver a la Misión
         </button>
 
-        <iframe 
-          src="https://www.youtube.com/embed/54ItE1G_4rE?autoplay=1&loop=1&playlist=54ItE1G_4rE" 
-          style={{ display: 'none' }} 
-          allow="autoplay" 
+        <audio 
+          src={`${import.meta.env.BASE_URL}audio/conga.m4a`} 
+          autoPlay 
+          loop 
         />
       </div>
     );
