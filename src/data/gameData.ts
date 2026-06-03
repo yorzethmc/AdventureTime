@@ -1,5 +1,7 @@
 export const WHATSAPP_PHONE = 'CONFIGURAR_NUMERO_AQUI';
 
+const base = import.meta.env.BASE_URL;
+
 export const avatarOptions = [
   {
     id: 'mage',
@@ -7,7 +9,7 @@ export const avatarOptions = [
     emoji: '🪄',
     code: 'Hechizo de Curiosidad',
     desc: 'Ideal para quien desbloquea aventuras con una sonrisa.',
-    image: '/avatars/maga.png'
+    image: `${base}avatars/maga.png`
   },
   {
     id: 'explorer',
@@ -15,7 +17,7 @@ export const avatarOptions = [
     emoji: '🗺️',
     code: 'Ruta Desconocida',
     desc: 'Lista para descubrir lugares, historias y planes inesperados.',
-    image: '/avatars/exploradora.png'
+    image: `${base}avatars/exploradora.png`
   },
   {
     id: 'princess_random',
@@ -23,7 +25,7 @@ export const avatarOptions = [
     emoji: '👑',
     code: 'Modo Sorpresa',
     desc: 'Elegante, impredecible y con bonus de encanto.',
-    image: '/avatars/princesa.png'
+    image: `${base}avatars/princesa.png`
   }
 ];
 
