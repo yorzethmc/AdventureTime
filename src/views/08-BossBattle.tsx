@@ -1,4 +1,4 @@
-import { avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions } from '../data/gameData';
+import { avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions, inventoryOptions, weatherOptions, sideQuestOptions } from '../data/gameData';
 import { useState, useEffect } from 'react';
 import type { GameState } from '../App';
 import { sfxClick } from '../utils/audio';
@@ -15,9 +15,12 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
   const [successRate, setSuccessRate] = useState(0);
 
   const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
+  const inventory = inventoryOptions.find(i => i.id === gameState.inventoryId);
+  const weather = weatherOptions.find(w => w.id === gameState.weatherId);
   const transport = transportOptions.find(t => t.id === gameState.transportId);
   const day = dayOptions.find(d => d.id === gameState.dayId);
   const dest = missionOptions.find(m => m.id === gameState.destId);
+  const sideQuest = sideQuestOptions.find(s => s.id === gameState.sideQuestId);
   const fuel = fuelOptions.find(f => f.id === gameState.fuelId);
 
   useEffect(() => {
@@ -25,7 +28,10 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
     const timer = setTimeout(() => {
       // Calculate a pseudo-random success rate based on lengths of IDs (just for fun, usually 85-99%)
       const hash = (gameState.avatarId?.length || 0) + (gameState.transportId?.length || 0) + (gameState.destId?.length || 0);
-      const rate = 85 + (hash % 15);
+      let rate = 85 + (hash % 15);
+      if (gameState.sideQuestId && gameState.sideQuestId !== 'none') {
+        rate = Math.min(100, rate + 10);
+      }
       setSuccessRate(rate);
       setCalculating(false);
     }, 3500);
@@ -59,6 +65,20 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
           </div>
         </li>
         <li className="inventory-item">
+          <div className="icon">{inventory?.emoji}</div>
+          <div className="details">
+            <strong>Equipamiento</strong>
+            <span className="text-pixel" style={{ fontSize: '0.7rem' }}>{inventory?.name}</span>
+          </div>
+        </li>
+        <li className="inventory-item">
+          <div className="icon">{weather?.emoji}</div>
+          <div className="details">
+            <strong>Clima Esperado</strong>
+            <span className="text-pixel" style={{ fontSize: '0.7rem' }}>{weather?.name}</span>
+          </div>
+        </li>
+        <li className="inventory-item">
           <div className="icon">{transport?.emoji}</div>
           <div className="details">
             <strong>Transporte</strong>
@@ -77,6 +97,13 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
           <div className="details">
             <strong>Destino</strong>
             <span className="text-pixel" style={{ fontSize: '0.7rem' }}>{dest?.dest}</span>
+          </div>
+        </li>
+        <li className="inventory-item">
+          <div className="icon">{sideQuest?.emoji}</div>
+          <div className="details">
+            <strong>Desvío / Extra</strong>
+            <span className="text-pixel" style={{ fontSize: '0.7rem' }}>{sideQuest?.name}</span>
           </div>
         </li>
         <li className="inventory-item">

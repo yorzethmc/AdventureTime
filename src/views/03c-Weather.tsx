@@ -1,0 +1,62 @@
+import { weatherOptions } from '../data/gameData';
+import type { GameState } from '../App';
+import { sfxClick, sfxSelect } from '../utils/audio';
+import Typewriter from '../components/Typewriter';
+
+interface Props {
+  onNext: () => void;
+  gameState: GameState;
+  updateState: (key: keyof GameState, value: string) => void;
+}
+
+const Weather = ({ onNext, gameState, updateState }: Props) => {
+  const handleSelect = (id: string) => {
+    updateState('weatherId', id);
+    sfxSelect();
+  };
+
+  const handleNext = () => {
+    if (gameState.weatherId) {
+      sfxClick();
+      onNext();
+    }
+  };
+
+  return (
+    <div className="rpg-panel fade-in">
+      <h2>Clima del Día</h2>
+      
+      <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
+        <Typewriter text="Miras por la ventana. ¿Qué tal está el clima hoy en la ciudad? Esto podría complicar algunas misiones..." speed={30} />
+      </div>
+
+      <div className="cards-grid">
+        {weatherOptions.map(weather => (
+          <div 
+            key={weather.id}
+            className={`rpg-card ${gameState.weatherId === weather.id ? 'selected' : ''}`}
+            onClick={() => handleSelect(weather.id)}
+          >
+            <div className="emoji">{weather.emoji}</div>
+            <div className="title">{weather.name}</div>
+            <div className="text-pixel" style={{ color: 'var(--text-highlight)', fontSize: '0.5rem', marginBottom: '5px' }}>{weather.code}</div>
+            <div className="desc text-pixel">{weather.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex-center mt-3">
+        <button 
+          className="btn-retro" 
+          onClick={handleNext}
+          disabled={!gameState.weatherId}
+          style={{ opacity: gameState.weatherId ? 1 : 0.5 }}
+        >
+          Confirmar Clima
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Weather;

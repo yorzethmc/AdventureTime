@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { WHATSAPP_PHONE, avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions } from '../data/gameData';
+import { WHATSAPP_PHONE, avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions, inventoryOptions, weatherOptions, sideQuestOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxVictory } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
@@ -12,7 +12,11 @@ interface Props {
 const Victory = ({ gameState, onRestart }: Props) => {
   const [successRate] = useState(() => {
     const hash = (gameState.avatarId?.length || 0) + (gameState.transportId?.length || 0) + (gameState.destId?.length || 0);
-    return 85 + (hash % 15);
+    let rate = 85 + (hash % 15);
+    if (gameState.sideQuestId && gameState.sideQuestId !== 'none') {
+      rate = Math.min(100, rate + 10);
+    }
+    return rate;
   });
 
   useEffect(() => {
@@ -20,17 +24,23 @@ const Victory = ({ gameState, onRestart }: Props) => {
   }, []);
 
   const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
+  const inventory = inventoryOptions.find(i => i.id === gameState.inventoryId);
+  const weather = weatherOptions.find(w => w.id === gameState.weatherId);
   const transport = transportOptions.find(t => t.id === gameState.transportId);
   const day = dayOptions.find(d => d.id === gameState.dayId);
   const dest = missionOptions.find(m => m.id === gameState.destId);
+  const sideQuest = sideQuestOptions.find(s => s.id === gameState.sideQuestId);
   const fuel = fuelOptions.find(f => f.id === gameState.fuelId);
 
   const whatsappText = `✨ Misión Aceptada ✨
 
 Avatar: ${avatar?.name}
+Equipo/Acompañante: ${inventory?.name}
+Clima previsto: ${weather?.name}
 Transporte: ${transport?.name}
 Día: ${day?.name} a las ${gameState.time}
-Misión: ${dest?.dest}
+Misión Principal: ${dest?.dest}
+Desvío Opcional: ${sideQuest?.name}
 Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
 
 🛡️ Probabilidad de Éxito: ${successRate}%

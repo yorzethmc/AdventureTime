@@ -9,31 +9,42 @@ import Splash from './views/00-Splash';
 import AvatarSelection from './views/01-AvatarSelection';
 import MissionBriefing from './views/02-MissionBriefing';
 import SadEnding from './views/03-SadEnding';
+import Inventory from './views/03b-Inventory';
+import Weather from './views/03c-Weather';
 import Transport from './views/04-Transport';
 import DateTime from './views/05-DateTime';
 import Destinations from './views/06-Destinations';
+import SideQuests from './views/06b-SideQuests';
 import Fuel from './views/07-Fuel';
 import BossBattle from './views/08-BossBattle';
 import Victory from './views/09-Victory';
 
 export interface GameState {
   avatarId: string | null;
+  inventoryId: string | null;
+  weatherId: string | null;
   transportId: string | null;
   dayId: string | null;
   time: string | null;
   destId: string | null;
+  sideQuestId: string | null;
   fuelId: string | null;
+  haggleDiscount: number;
 }
 
 const App = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [gameState, setGameState] = useState<GameState>({
     avatarId: null,
+    inventoryId: null,
+    weatherId: null,
     transportId: null,
     dayId: null,
     time: null,
     destId: null,
-    fuelId: null
+    sideQuestId: null,
+    fuelId: null,
+    haggleDiscount: 0
   });
 
   const [audioInitialized, setAudioInitialized] = useState(false);
@@ -57,10 +68,10 @@ const App = () => {
 
   // Save state on change
   useEffect(() => {
-    if (currentStep > 0 && currentStep !== 9) {
+    if (currentStep > 0 && currentStep !== 12) {
       localStorage.setItem('rpgDateQuestState', JSON.stringify(gameState));
       localStorage.setItem('rpgDateQuestStep', currentStep.toString());
-    } else if (currentStep === 9) {
+    } else if (currentStep === 12) {
       // Clear on victory
       localStorage.removeItem('rpgDateQuestState');
       localStorage.removeItem('rpgDateQuestStep');
@@ -116,57 +127,90 @@ const App = () => {
       case 3:
         return <SadEnding onRetry={() => goToStep(2)} />;
       case 4:
+        return <Inventory 
+                  onNext={nextStep} 
+                  gameState={gameState} 
+                  updateState={updateGameState as any} 
+               />;
+      case 5:
+        return <Weather 
+                  onNext={nextStep} 
+                  gameState={gameState} 
+                  updateState={updateGameState as any} 
+               />;
+      case 6:
         return <Transport 
                   onNext={nextStep} 
                   gameState={gameState} 
-                  updateState={updateGameState} 
+                  updateState={updateGameState as any} 
                />;
-      case 5:
+      case 7:
         return <DateTime 
                   onNext={nextStep} 
                   gameState={gameState} 
-                  updateState={updateGameState} 
+                  updateState={updateGameState as any} 
                />;
-      case 6:
+      case 8:
         return <Destinations 
                   onNext={() => {
                     const mission = missionOptions.find(m => m.id === gameState.destId);
                     if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe'))) {
-                      updateGameState('fuelId', null);
-                      goToStep(8);
+                      updateGameState('fuelId', null as any);
+                      goToStep(11); // Skip Fuel and SideQuests if going straight to eating? Wait, SideQuests are before Fuel. Let's let them do side quests.
+                      // Actually, if we want them to do SideQuests even if they eat:
+                      goToStep(9);
                     } else {
                       nextStep();
                     }
                   }} 
                   gameState={gameState} 
-                  updateState={updateGameState} 
+                  updateState={updateGameState as any} 
                />;
-      case 7:
+      case 9:
+        return <SideQuests 
+                  onNext={() => {
+                    // Check if fuel should be skipped
+                    const mission = missionOptions.find(m => m.id === gameState.destId);
+                    if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe'))) {
+                      updateGameState('fuelId', null as any);
+                      goToStep(11); // BossBattle
+                    } else {
+                      nextStep(); // Fuel
+                    }
+                  }} 
+                  gameState={gameState} 
+                  updateState={updateGameState as any} 
+               />;
+      case 10:
         return <Fuel 
                   onNext={nextStep} 
                   gameState={gameState} 
-                  updateState={updateGameState} 
+                  updateState={updateGameState as any} 
                />;
-      case 8:
+      case 11:
         return <BossBattle 
                   onConfirm={nextStep} 
                   onEdit={() => goToStep(4)} 
                   gameState={gameState} 
                />;
-      case 9:
+      case 12:
         return <Victory gameState={gameState} onRestart={() => {
           setGameState({
             avatarId: null,
+            inventoryId: null,
+            weatherId: null,
             transportId: null,
             dayId: null,
             time: null,
             destId: null,
-            fuelId: null
+            sideQuestId: null,
+            fuelId: null,
+            haggleDiscount: 0
           });
           goToStep(0);
         }} />;
       default:
-        return <Splash onNext={nextStep} onInteract={handleInteraction} />;
+        return <Splash onNext={nextStep} onInteract={handleInteraction} onContinue={handleContinue} hasSave={!!localStorage.getItem('rpgDateQuestStep')} />;
     }
   };
 
@@ -176,10 +220,10 @@ const App = () => {
       <MusicPlayer />
       <div className="scanlines" />
       <div className="app-container screen-enter" key={`step-${currentStep}`} onClick={handleInteraction}>
-        {currentStep > 0 && currentStep !== 3 && currentStep !== 9 && (
+        {currentStep > 0 && currentStep !== 3 && currentStep !== 12 && (
           <div className="status-bar fade-in">
             <span>HP: 100/100</span>
-            <span style={{ color: '#ffd43b' }}>🪙 ORO: {calculateRemainingGold(gameState.transportId, gameState.destId, gameState.fuelId)}</span>
+            <span style={{ color: '#ffd43b' }}>🪙 ORO: {calculateRemainingGold(gameState.transportId, gameState.destId, gameState.fuelId, gameState.haggleDiscount)}</span>
             <span>{gameState.avatarId ? 'P1 READY' : 'NO AVATAR'}</span>
           </div>
         )}

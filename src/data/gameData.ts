@@ -141,6 +141,26 @@ export const transportOptions = [
   }
 ];
 
+export const inventoryOptions = [
+  { id: 'camera', name: 'Cámara Vintage', emoji: '📸', code: 'Aesthetic Mode', desc: 'Promete recuerdos memorables y fotos increíbles.' },
+  { id: 'dog', name: 'Perrito Acompañante', emoji: '🐕', code: 'Modo Pet-Friendly', desc: 'Bloquea el cine, pero abre el camino a lugares abiertos.' },
+  { id: 'sunglasses', name: 'Lentes de Sol', emoji: '🕶️', code: 'Modo Diurno', desc: 'Solo planes bajo la luz del sol.' },
+  { id: 'sweater', name: 'Suéter Gigante', emoji: '🧣', code: 'A prueba de frío', desc: 'Permite explorar montañas de noche.' }
+];
+
+export const weatherOptions = [
+  { id: 'sunny', name: 'Despejado', emoji: '☀️', code: 'Cielo Claro', desc: 'Ideal para planes al aire libre y fotos.' },
+  { id: 'rainy', name: 'Lluvioso', emoji: '🌧️', code: 'Días Grises', desc: 'Perfecto para estar bajo techo, con café y buena charla.' },
+  { id: 'cloudy', name: 'Nublado', emoji: '☁️', code: 'Vibra Misteriosa', desc: 'Ideal para misiones alternativas o de terror.' }
+];
+
+export const sideQuestOptions = [
+  { id: 'photo', name: 'Spot Fotográfico', emoji: '✨', code: '+10 Aesthetic', desc: 'Detenerse 5 min para una foto aesthetic antes de llegar.' },
+  { id: 'playlist', name: 'Batalla de DJ', emoji: '🎵', code: '+15 Vibe', desc: 'Armar una playlist colaborativa en el camino.' },
+  { id: 'scenic', name: 'Ruta Escénica', emoji: '🌅', code: '+10 Romance', desc: 'Tomar el camino largo solo por la vista.' },
+  { id: 'none', name: 'Directo al grano', emoji: '⏭️', code: 'Speedrun', desc: 'Sin desvíos, la misión principal aguarda.' }
+];
+
 export const missionOptions = [
   {
     id: 'poas',
@@ -390,7 +410,7 @@ const periodOrder = ['morning', 'early_afternoon', 'evening', 'night'];
 
 // Filter missions: only show missions whose periods include the current period
 // This means at 18:00 (evening), volcanes (morning/early_afternoon only) are hidden
-export const filterMissions = (time: string, transportId: string | null, avatarId: string | null = null) => {
+export const filterMissions = (time: string, transportId: string | null, avatarId: string | null = null, inventoryId: string | null = null, weatherId: string | null = null) => {
   if (!time) return missionOptions;
 
   const currentPeriod = getTimePeriod(time);
@@ -419,6 +439,9 @@ export const filterMissions = (time: string, transportId: string | null, avatarI
         const pIdx = periodOrder.indexOf(p);
         return pIdx >= currentIdx;
       });
+      // Inventory overrides time
+      if (inventoryId === 'sunglasses' && (currentPeriod === 'evening' || currentPeriod === 'night')) return false;
+      if (inventoryId === 'sweater' && mission.dest.includes('Poás')) timeValid = true; // Sweater allows Poas anytime
     }
     
     // 2. Transport filtering
@@ -426,6 +449,10 @@ export const filterMissions = (time: string, transportId: string | null, avatarI
     if (transport && !transport.allowedMissionTags.includes('all')) {
       transportValid = mission.tags.some(tag => transport.allowedMissionTags.includes(tag));
     }
+
+    // 3. Inventory/Weather filtering
+    if (inventoryId === 'dog' && mission.tags.includes('cine')) return false;
+    if (weatherId === 'rainy' && mission.tags.includes('aventura')) return false;
 
     return timeValid && transportValid;
   });
@@ -444,7 +471,7 @@ export const filterFuel = (destId: string | null) => {
 
 export const MAX_GOLD = 100;
 
-export const calculateRemainingGold = (transportId: string | null, destId: string | null, fuelId: string | null) => {
+export const calculateRemainingGold = (transportId: string | null, destId: string | null, fuelId: string | null, haggleDiscount: number = 0) => {
   let gold = MAX_GOLD;
   
   if (transportId) {
@@ -461,6 +488,8 @@ export const calculateRemainingGold = (transportId: string | null, destId: strin
     const f = fuelOptions.find(o => o.id === fuelId);
     if (f) gold -= f.cost;
   }
+  
+  gold += haggleDiscount;
   
   return gold;
 };
