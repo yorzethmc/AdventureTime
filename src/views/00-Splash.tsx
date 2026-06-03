@@ -5,23 +5,15 @@ import Typewriter from '../components/Typewriter';
 interface Props {
   onNext: () => void;
   onInteract: () => void;
-  onContinue?: () => void;
-  hasSave?: boolean;
 }
 
-const Splash = ({ onNext, onInteract, onContinue, hasSave }: Props) => {
+const Splash = ({ onNext, onInteract }: Props) => {
   const [showButton, setShowButton] = useState(false);
 
   const handleStart = () => {
     onInteract();
     sfxClick();
     onNext();
-  };
-
-  const handleContinueClick = () => {
-    onInteract();
-    sfxClick();
-    if (onContinue) onContinue();
   };
 
   return (
@@ -42,13 +34,8 @@ const Splash = ({ onNext, onInteract, onContinue, hasSave }: Props) => {
       </div>
 
       <div className={`flex-column gap-3 mt-3 ${showButton ? 'fade-in' : 'hidden'}`} style={{ visibility: showButton ? 'visible' : 'hidden' }}>
-        {hasSave && (
-          <button className="btn-retro" onClick={handleContinueClick} style={{ fontSize: '1rem', padding: '10px 20px', backgroundColor: '#5c940d' }}>
-            CONTINUAR PARTIDA
-          </button>
-        )}
         <button className="btn-retro" onClick={handleStart} style={{ fontSize: '1.2rem', padding: '15px 30px', animation: 'float 2s infinite' }}>
-          {hasSave ? 'NUEVA PARTIDA' : 'PRESS START'}
+          PRESS START
         </button>
       </div>
     </div>

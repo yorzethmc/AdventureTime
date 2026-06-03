@@ -49,34 +49,11 @@ const App = () => {
 
   const [audioInitialized, setAudioInitialized] = useState(false);
 
-  // Load state on mount
+  // No localStorage save/load logic needed
   useEffect(() => {
-    const savedState = localStorage.getItem('rpgDateQuestState');
-    const savedStep = localStorage.getItem('rpgDateQuestStep');
-    if (savedState && savedStep) {
-      try {
-        const parsedState = JSON.parse(savedState);
-        // Only load if not on Splash (or let splash handle "Continuar")
-        // We will just load the state silently. If they are on step > 0, we can restore it.
-        // Actually, we'll restore state but stay on step 0 to let them choose "Continuar"
-        setGameState(parsedState);
-      } catch (e) {
-        console.error("Failed to parse save", e);
-      }
-    }
+    // Intentionally empty or remove entirely. 
+    // Left empty here to just replace the block.
   }, []);
-
-  // Save state on change
-  useEffect(() => {
-    if (currentStep > 0 && currentStep !== 12) {
-      localStorage.setItem('rpgDateQuestState', JSON.stringify(gameState));
-      localStorage.setItem('rpgDateQuestStep', currentStep.toString());
-    } else if (currentStep === 12) {
-      // Clear on victory
-      localStorage.removeItem('rpgDateQuestState');
-      localStorage.removeItem('rpgDateQuestStep');
-    }
-  }, [gameState, currentStep]);
 
   // A helper to initialize audio on first interaction
   const handleInteraction = () => {
@@ -100,19 +77,12 @@ const App = () => {
     setCurrentStep(step);
   };
 
-  const handleContinue = () => {
-    const savedStep = localStorage.getItem('rpgDateQuestStep');
-    if (savedStep) {
-      setCurrentStep(parseInt(savedStep, 10));
-    } else {
-      nextStep();
-    }
-  };
+
 
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        return <Splash onNext={nextStep} onInteract={handleInteraction} onContinue={handleContinue} hasSave={!!localStorage.getItem('rpgDateQuestStep')} />;
+        return <Splash onNext={nextStep} onInteract={handleInteraction} />;
       case 1:
         return <AvatarSelection 
                   onNext={nextStep} 
@@ -211,7 +181,7 @@ const App = () => {
           goToStep(0);
         }} />;
       default:
-        return <Splash onNext={nextStep} onInteract={handleInteraction} onContinue={handleContinue} hasSave={!!localStorage.getItem('rpgDateQuestStep')} />;
+        return <Splash onNext={nextStep} onInteract={handleInteraction} />;
     }
   };
 
