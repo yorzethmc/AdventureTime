@@ -1,6 +1,7 @@
 import { filterMissionsByTime } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect } from '../utils/audio';
+import Typewriter from '../components/Typewriter';
 
 interface Props {
   onNext: () => void;
@@ -26,9 +27,10 @@ const Destinations = ({ onNext, gameState, updateState }: Props) => {
   return (
     <div className="rpg-panel fade-in">
       <h2>Selecciona Destino</h2>
-      <p className="text-pixel text-center mb-3" style={{ fontSize: '0.6rem', color: '#adb5bd' }}>
-        El mapa se ha adaptado a la hora elegida ({gameState.time}).
-      </p>
+      
+      <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
+        <Typewriter text={`El mapa se ha adaptado a la magia de las ${gameState.time}. Revisa las rutas disponibles y elige el rumbo de la expedición.`} speed={30} />
+      </div>
       
       <div className="cards-grid">
         {availableMissions.map(mission => (

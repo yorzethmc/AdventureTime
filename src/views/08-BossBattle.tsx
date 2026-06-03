@@ -1,6 +1,7 @@
 import { avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick } from '../utils/audio';
+import Typewriter from '../components/Typewriter';
 
 interface Props {
   onConfirm: () => void;
@@ -18,9 +19,10 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
   return (
     <div className="rpg-panel fade-in">
       <h2 style={{ color: 'var(--primary)' }}>Boss Battle: Confirmar la cita</h2>
-      <p className="text-pixel text-center mb-3" style={{ fontSize: '0.6rem', color: '#adb5bd' }}>
-        Antes de desbloquear la victoria, revisá tu inventario de misión. Si todo está listo, confirmamos la aventura.
-      </p>
+      
+      <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
+        <Typewriter text="Estás a punto de desbloquear la aventura final. Revisa tu inventario y confirma tu equipo. No hay vuelta atrás..." speed={30} />
+      </div>
       
       <ul className="inventory-list mt-3 mb-3">
         <li className="inventory-item">

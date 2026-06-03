@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { WHATSAPP_PHONE, avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxVictory } from '../utils/audio';
+import Typewriter from '../components/Typewriter';
 
 interface Props {
   gameState: GameState;
@@ -19,18 +20,17 @@ const Victory = ({ gameState, onRestart }: Props) => {
   const dest = missionOptions.find(m => m.id === gameState.destId);
   const fuel = fuelOptions.find(f => f.id === gameState.fuelId);
 
-  const whatsappText = `RPG DATE QUEST - MISION CONFIRMADA
+  const whatsappText = `✨ ¡MISION ACEPTADA! ✨
 
-Resumen de la aventura:
+¡Me presento lista para la aventura! Aquí te paso mi inventario:
 
-Avatar: ${avatar?.name || ''}
-Transporte: ${transport?.name || ''}
-Dia/Fecha: ${day?.name || ''}
-Hora: ${gameState.time || ''}
-Destino: ${dest?.dest || ''}
-Combustible: ${fuel?.name || ''}
+🎮 *Avatar:* ${avatar?.name || ''}
+🚗 *Montura:* ${transport?.name || ''}
+⏰ *Día de incursión:* ${day?.name || ''} a las ${gameState.time || ''}
+🗺️ *Quest:* ${dest?.dest || ''}
+🌮 *Pociones:* ${fuel?.name || ''}
 
-Estado: CITA DESBLOQUEADA`;
+¡Nos vemos pronto para empezar esta partida! 👾💖`;
 
   const whatsappLink = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(whatsappText)}`;
 
@@ -38,10 +38,9 @@ Estado: CITA DESBLOQUEADA`;
     <div className="rpg-panel fade-in text-center" style={{ borderColor: 'var(--success)', boxShadow: '0 0 20px rgba(81, 207, 102, 0.5)' }}>
       <h1 style={{ color: 'var(--success)', fontSize: '2rem', animation: 'float 2s infinite, pulse 2s infinite' }}>CITA DESBLOQUEADA</h1>
       
-      <p className="text-pixel mb-3" style={{ lineHeight: '1.8' }}>
-        La misión fue aceptada y el mapa quedó marcado.<br/>
-        Ahora solo falta enviar la confirmación.
-      </p>
+      <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
+        <Typewriter text="¡Nivel completado! Tu progreso ha sido guardado. Ahora envíale este pergamino a tu Player 2 por WhatsApp para hacer oficial la partida." speed={30} />
+      </div>
 
       <div className="flex-center mt-3 mb-3">
         <a 

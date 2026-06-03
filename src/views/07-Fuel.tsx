@@ -1,6 +1,7 @@
 import { fuelOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect } from '../utils/audio';
+import Typewriter from '../components/Typewriter';
 
 interface Props {
   onNext: () => void;
@@ -24,9 +25,10 @@ const Fuel = ({ onNext, gameState, updateState }: Props) => {
   return (
     <div className="rpg-panel fade-in">
       <h2>Combustible</h2>
-      <p className="text-pixel text-center mb-3" style={{ fontSize: '0.6rem', color: '#adb5bd' }}>
-        Selecciona las provisiones para la aventura.
-      </p>
+      
+      <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
+        <Typewriter text="El camino es largo y nuestros puntos de magia (MP) se agotarán. ¿Qué raciones nos darán la energía para continuar?" speed={30} />
+      </div>
       
       <div className="cards-grid">
         {fuelOptions.map(fuel => (
