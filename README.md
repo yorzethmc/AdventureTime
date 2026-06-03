@@ -1,73 +1,60 @@
-# React + TypeScript + Vite
+# 🎮 Invite98 - Aventura Interactiva Retro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Invite98 es una experiencia web interactiva al estilo de los videojuegos RPG retro de los 90s, diseñada como una forma original y divertida de invitar a alguien a una cita. 
 
-Currently, two official plugins are available:
+La aplicación cuenta con selección de avatares, misiones, diálogos interactivos, música de fondo (8-bit) y minijuegos, culminando en una batalla contra un "jefe final" (la indecisión) y un final victorioso donde se revelan los detalles de la cita.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌟 Características
 
-## React Compiler
+- **Estilo Retro Pixel Art**: Interfaz de usuario inspirada en consolas clásicas (ventanas con bordes pixelados, tipografía monospace, colores vibrantes).
+- **Selección de Personaje**: El jugador puede elegir entre tres avatares distintos (Exploradora, Maga o Princesa).
+- **Narrativa Interactiva**: Diálogos tipo RPG con el "Rey del Reino" que asigna la misión principal (la cita).
+- **Sistema de Opciones**: 
+  - Elección de Fecha y Hora.
+  - Elección de Destino.
+  - Elección del Medio de Transporte.
+- **Música y Efectos de Sonido**: Integración de audio para enriquecer la experiencia inmersiva.
+- **Batalla Final**: Un combate simulado por turnos al estilo Final Fantasy/Pokémon contra "La Indecisión".
+- **Finales Múltiples**: Dependiendo de si la persona acepta la misión o se rinde, se muestra un Final Victorioso o un Final Triste.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Tecnologías Utilizadas
 
-## Expanding the ESLint configuration
+- **React 19**
+- **TypeScript**
+- **Vite**
+- **CSS3** (Variables CSS, Animaciones y Diseño Responsivo)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 💻 Instalación y Ejecución Local
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Si deseas correr este proyecto en tu propia máquina:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. Clona este repositorio o descarga el código fuente.
+2. Abre una terminal en la carpeta del proyecto.
+3. Instala las dependencias ejecutando:
+   ```bash
+   npm install
+   ```
+4. Inicia el servidor de desarrollo local:
+   ```bash
+   npm run dev
+   ```
+5. Abre tu navegador y visita la URL proporcionada (generalmente `http://localhost:5173/`).
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🌐 Publicación (Deploy) en GitHub Pages
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Este proyecto está configurado para publicarse de manera muy sencilla usando GitHub Pages:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Asegúrate de tener el código en un repositorio de GitHub llamado `Invite98`.
+2. En tu terminal, ejecuta el siguiente comando:
+   ```bash
+   npm run deploy
+   ```
+3. Esto construirá la versión de producción de la aplicación y la subirá automáticamente a la rama `gh-pages` de tu repositorio.
+4. Tu invitación estará en línea y accesible a través de tu enlace personalizado de GitHub.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📝 Personalización
+
+Puedes modificar la historia, las opciones de los lugares, horas y diálogos editando el archivo `src/data/gameData.ts`. Toda la información de la cita está centralizada ahí para que sea fácil de actualizar.
+
+---
+*Desarrollado con ❤️ y mucha nostalgia por los juegos de 8-bits.*
