@@ -1,6 +1,6 @@
-import { fuelOptions } from '../data/gameData';
+import { filterFuel, calculateRemainingGold } from '../data/gameData';
 import type { GameState } from '../App';
-import { sfxClick, sfxSelect } from '../utils/audio';
+import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
 
 interface Props {
@@ -10,7 +10,14 @@ interface Props {
 }
 
 const Fuel = ({ onNext, gameState, updateState }: Props) => {
-  const handleSelect = (id: string) => {
+  const currentGold = calculateRemainingGold(gameState.transportId, gameState.destId, null); // Gold before paying for fuel
+  const availableFuels = filterFuel(gameState.destId);
+
+  const handleSelect = (id: string, cost: number) => {
+    if (currentGold < cost) {
+      sfxBuzz();
+      return;
+    }
     updateState('fuelId', id);
     sfxSelect();
   };
@@ -31,18 +38,25 @@ const Fuel = ({ onNext, gameState, updateState }: Props) => {
       </div>
       
       <div className="cards-grid">
-        {fuelOptions.map(fuel => (
-          <div 
-            key={fuel.id}
-            className={`rpg-card ${gameState.fuelId === fuel.id ? 'selected' : ''}`}
-            onClick={() => handleSelect(fuel.id)}
-          >
-            <div className="emoji">{fuel.emoji}</div>
-            <div className="title" style={{ fontSize: '0.8rem' }}>{fuel.name}</div>
-            <div className="text-pixel" style={{ color: 'var(--text-highlight)', fontSize: '0.5rem', marginBottom: '5px' }}>{fuel.title}</div>
-            <div className="desc text-pixel" style={{ fontSize: '0.6rem' }}>{fuel.desc}</div>
-          </div>
-        ))}
+        {availableFuels.map(fuel => {
+          const isAffordable = currentGold >= fuel.cost;
+          return (
+            <div 
+              key={fuel.id}
+              className={`rpg-card ${gameState.fuelId === fuel.id ? 'selected' : ''}`}
+              onClick={() => handleSelect(fuel.id, fuel.cost)}
+              style={{ opacity: isAffordable ? 1 : 0.4 }}
+            >
+              <div className="emoji">{fuel.emoji}</div>
+              <div className="title" style={{ fontSize: '0.8rem' }}>{fuel.name}</div>
+              <div className="text-pixel" style={{ color: 'var(--text-highlight)', fontSize: '0.5rem', marginBottom: '5px' }}>{fuel.title}</div>
+              <div className="desc text-pixel" style={{ fontSize: '0.6rem' }}>{fuel.desc}</div>
+              <div className="text-pixel mt-3" style={{ color: isAffordable ? '#ffd43b' : '#ff6b6b', fontSize: '0.6rem' }}>
+                Costo: {fuel.cost} Oro
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex-center mt-3">

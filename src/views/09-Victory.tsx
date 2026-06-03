@@ -10,6 +10,11 @@ interface Props {
 }
 
 const Victory = ({ gameState, onRestart }: Props) => {
+  const [successRate] = useState(() => {
+    const hash = (gameState.avatarId?.length || 0) + (gameState.transportId?.length || 0) + (gameState.destId?.length || 0);
+    return 85 + (hash % 15);
+  });
+
   useEffect(() => {
     sfxVictory();
   }, []);
@@ -20,17 +25,17 @@ const Victory = ({ gameState, onRestart }: Props) => {
   const dest = missionOptions.find(m => m.id === gameState.destId);
   const fuel = fuelOptions.find(f => f.id === gameState.fuelId);
 
-  const whatsappText = `✨ ¡MISION ACEPTADA! ✨
+  const whatsappText = `✨ Misión Aceptada ✨
 
-¡Me presento lista para la aventura! Aquí te paso mi inventario:
+Avatar: ${avatar?.name}
+Transporte: ${transport?.name}
+Día: ${day?.name} a las ${gameState.time}
+Misión: ${dest?.dest}
+Combustible: ${fuel?.name}
 
-🎮 *Avatar:* ${avatar?.name || ''}
-🚗 *Montura:* ${transport?.name || ''}
-⏰ *Día de incursión:* ${day?.name || ''} a las ${gameState.time || ''}
-🗺️ *Quest:* ${dest?.dest || ''}
-🌮 *Pociones:* ${fuel?.name || ''}
-
-¡Nos vemos pronto para empezar esta partida! 👾💖`;
+🛡️ Probabilidad de Éxito: ${successRate}%
+⭐ ¡P1 READY!
+¿Qué tal el plan? 🚀`;
 
   const whatsappLink = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(whatsappText)}`;
 

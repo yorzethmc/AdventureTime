@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './index.css';
 import { initAudio } from './utils/audio';
+import { calculateRemainingGold } from './data/gameData';
 import GameBackground from './components/GameBackground';
 import MusicPlayer from './components/MusicPlayer';
 
@@ -37,6 +38,36 @@ const App = () => {
 
   const [audioInitialized, setAudioInitialized] = useState(false);
 
+  // Load state on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('rpgDateQuestState');
+    const savedStep = localStorage.getItem('rpgDateQuestStep');
+    if (savedState && savedStep) {
+      try {
+        const parsedState = JSON.parse(savedState);
+        const parsedStep = parseInt(savedStep, 10);
+        // Only load if not on Splash (or let splash handle "Continuar")
+        // We will just load the state silently. If they are on step > 0, we can restore it.
+        // Actually, we'll restore state but stay on step 0 to let them choose "Continuar"
+        setGameState(parsedState);
+      } catch (e) {
+        console.error("Failed to parse save", e);
+      }
+    }
+  }, []);
+
+  // Save state on change
+  useEffect(() => {
+    if (currentStep > 0 && currentStep !== 9) {
+      localStorage.setItem('rpgDateQuestState', JSON.stringify(gameState));
+      localStorage.setItem('rpgDateQuestStep', currentStep.toString());
+    } else if (currentStep === 9) {
+      // Clear on victory
+      localStorage.removeItem('rpgDateQuestState');
+      localStorage.removeItem('rpgDateQuestStep');
+    }
+  }, [gameState, currentStep]);
+
   // A helper to initialize audio on first interaction
   const handleInteraction = () => {
     if (!audioInitialized) {
@@ -59,10 +90,19 @@ const App = () => {
     setCurrentStep(step);
   };
 
+  const handleContinue = () => {
+    const savedStep = localStorage.getItem('rpgDateQuestStep');
+    if (savedStep) {
+      setCurrentStep(parseInt(savedStep, 10));
+    } else {
+      nextStep();
+    }
+  };
+
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        return <Splash onNext={nextStep} onInteract={handleInteraction} />;
+        return <Splash onNext={nextStep} onInteract={handleInteraction} onContinue={handleContinue} hasSave={!!localStorage.getItem('rpgDateQuestStep')} />;
       case 1:
         return <AvatarSelection 
                   onNext={nextStep} 
@@ -132,7 +172,7 @@ const App = () => {
         {currentStep > 0 && currentStep !== 3 && currentStep !== 9 && (
           <div className="status-bar fade-in">
             <span>HP: 100/100</span>
-            <span>LVL: 99</span>
+            <span style={{ color: '#ffd43b' }}>🪙 ORO: {calculateRemainingGold(gameState.transportId, gameState.destId, gameState.fuelId)}</span>
             <span>{gameState.avatarId ? 'P1 READY' : 'NO AVATAR'}</span>
           </div>
         )}

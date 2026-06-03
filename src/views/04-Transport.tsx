@@ -1,6 +1,6 @@
-import { transportOptions } from '../data/gameData';
+import { transportOptions, calculateRemainingGold } from '../data/gameData';
 import type { GameState } from '../App';
-import { sfxClick, sfxSelect } from '../utils/audio';
+import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
 
 interface Props {
@@ -10,7 +10,13 @@ interface Props {
 }
 
 const Transport = ({ onNext, gameState, updateState }: Props) => {
-  const handleSelect = (id: string) => {
+  const currentGold = calculateRemainingGold(null, gameState.destId, gameState.fuelId); // Gold before paying for transport
+
+  const handleSelect = (id: string, cost: number) => {
+    if (currentGold < cost) {
+      sfxBuzz();
+      return;
+    }
     updateState('transportId', id);
     sfxSelect();
   };
@@ -31,18 +37,25 @@ const Transport = ({ onNext, gameState, updateState }: Props) => {
       </div>
 
       <div className="cards-grid">
-        {transportOptions.map(transport => (
-          <div 
-            key={transport.id}
-            className={`rpg-card ${gameState.transportId === transport.id ? 'selected' : ''}`}
-            onClick={() => handleSelect(transport.id)}
-          >
-            <div className="emoji">{transport.emoji}</div>
-            <div className="title">{transport.name}</div>
-            <div className="text-pixel" style={{ color: 'var(--text-highlight)', fontSize: '0.5rem', marginBottom: '5px' }}>{transport.code}</div>
-            <div className="desc text-pixel">{transport.desc}</div>
-          </div>
-        ))}
+        {transportOptions.map(transport => {
+          const isAffordable = currentGold >= transport.cost;
+          return (
+            <div 
+              key={transport.id}
+              className={`rpg-card ${gameState.transportId === transport.id ? 'selected' : ''}`}
+              onClick={() => handleSelect(transport.id, transport.cost)}
+              style={{ opacity: isAffordable ? 1 : 0.4 }}
+            >
+              <div className="emoji">{transport.emoji}</div>
+              <div className="title">{transport.name}</div>
+              <div className="text-pixel" style={{ color: 'var(--text-highlight)', fontSize: '0.5rem', marginBottom: '5px' }}>{transport.code}</div>
+              <div className="desc text-pixel">{transport.desc}</div>
+              <div className="text-pixel mt-3" style={{ color: isAffordable ? '#ffd43b' : '#ff6b6b', fontSize: '0.6rem' }}>
+                Costo: {transport.cost} Oro
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex-center mt-3">

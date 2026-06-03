@@ -1,6 +1,6 @@
-import { filterMissionsByTime } from '../data/gameData';
+import { filterMissions, calculateRemainingGold } from '../data/gameData';
 import type { GameState } from '../App';
-import { sfxClick, sfxSelect } from '../utils/audio';
+import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
 
 interface Props {
@@ -10,9 +10,14 @@ interface Props {
 }
 
 const Destinations = ({ onNext, gameState, updateState }: Props) => {
-  const availableMissions = filterMissionsByTime(gameState.time || '');
+  const availableMissions = filterMissions(gameState.time || '', gameState.transportId, gameState.avatarId);
+  const currentGold = calculateRemainingGold(gameState.transportId, null, gameState.fuelId); // Gold before paying for destination
 
-  const handleSelect = (id: string) => {
+  const handleSelect = (id: string, cost: number) => {
+    if (currentGold < cost) {
+      sfxBuzz();
+      return;
+    }
     updateState('destId', id);
     sfxSelect();
   };
@@ -33,23 +38,30 @@ const Destinations = ({ onNext, gameState, updateState }: Props) => {
       </div>
       
       <div className="cards-grid">
-        {availableMissions.map(mission => (
-          <div 
-            key={mission.id}
-            className={`rpg-card ${gameState.destId === mission.id ? 'selected' : ''}`}
-            onClick={() => handleSelect(mission.id)}
-          >
-            <div className="emoji">{mission.emoji}</div>
-            <div className="title" style={{ fontSize: '0.8rem' }}>{mission.dest}</div>
-            <div className="text-pixel" style={{ color: 'var(--text-highlight)', fontSize: '0.5rem', marginBottom: '5px' }}>{mission.code}</div>
-            <div className="desc text-pixel" style={{ fontSize: '0.6rem' }}>{mission.desc}</div>
-            {mission.warnings && mission.warnings.length > 0 && (
-              <div className="text-pixel mt-3" style={{ color: '#ffc078', fontSize: '0.5rem' }}>
-                ⚠️ {mission.warnings[0]}
+        {availableMissions.map(mission => {
+          const isAffordable = currentGold >= mission.cost;
+          return (
+            <div 
+              key={mission.id}
+              className={`rpg-card ${gameState.destId === mission.id ? 'selected' : ''}`}
+              onClick={() => handleSelect(mission.id, mission.cost)}
+              style={{ opacity: isAffordable ? 1 : 0.4 }}
+            >
+              <div className="emoji">{mission.emoji}</div>
+              <div className="title" style={{ fontSize: '0.8rem' }}>{mission.dest}</div>
+              <div className="text-pixel" style={{ color: 'var(--text-highlight)', fontSize: '0.5rem', marginBottom: '5px' }}>{mission.code}</div>
+              <div className="desc text-pixel" style={{ fontSize: '0.6rem' }}>{mission.desc}</div>
+              <div className="text-pixel mt-3" style={{ color: isAffordable ? '#ffd43b' : '#ff6b6b', fontSize: '0.6rem' }}>
+                Costo: {mission.cost} Oro
               </div>
-            )}
-          </div>
-        ))}
+              {mission.warnings && mission.warnings.length > 0 && (
+                <div className="text-pixel mt-2" style={{ color: '#ffc078', fontSize: '0.5rem' }}>
+                  ⚠️ {mission.warnings[0]}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex-center mt-3">
