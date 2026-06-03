@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Corazón Encantado - Loop Infinito 8-Bits</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #050510;
+            color: #00ffcc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            background-image: radial-gradient(circle at center, #1a1a3a 0%, #000 100%);
+            transition: background-image 0.5s ease;
+        }
+
+        /* Contêiner do vídeo oculto */
+        .video-container {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+            visibility: hidden;
+        }
+
+        .rpg-box {
+            background: rgba(0, 0, 0, 0.85);
+            border: 4px solid #00ffcc;
+            border-radius: 12px;
+            padding: 35px;
+            width: 85%;
+            max-width: 800px;
+            height: 400px;
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+            position: relative;
+            transition: border-color 0.5s, box-shadow 0.5s;
+        }
+
+        h2 {
+            font-size: 14px;
+            color: #ff00ff;
+            text-align: right;
+            margin-top: 0;
+            border-bottom: 2px solid #ff00ff;
+            padding-bottom: 10px;
+            transition: color 0.5s, border-color 0.5s;
+        }
+
+        #lyrics-display {
+            font-size: 15px;
+            line-height: 2.5;
+            color: #ffffff;
+            text-align: left;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 12px;
+            height: 15px;
+            background-color: #00ffcc;
+            animation: blink 1s step-end infinite;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            background-color: #00ffcc;
+            color: #000;
+            font-family: 'Press Start 2P', cursive;
+            border: none;
+            padding: 15px 30px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 6px 0 #00997a;
+            transition: 0.1s;
+            z-index: 10;
+        }
+
+        button:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+
+        button:disabled {
+            background-color: #333;
+            box-shadow: none;
+            cursor: not-allowed;
+            color: #888;
+        }
+
+        #switchBtn {
+            background-color: #ff00ff;
+            box-shadow: 0 6px 0 #990099;
+            color: white;
+        }
+
+        /* Tema 8 bits ativado por padrão no body */
+        body.theme-8bit .rpg-box {
+            border-color: #ffcc00;
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.4);
+        }
+
+        body.theme-8bit h2 {
+            color: #ffcc00;
+            border-color: #ffcc00;
+        }
+
+        body.theme-8bit .cursor {
+            background-color: #ffcc00;
+        }
+
+        body.theme-8bit button#playBtn {
+            background-color: #ffcc00;
+            box-shadow: 0 6px 0 #b38f00;
+        }
+    </style>
+</head>
+
+<body class="theme-8bit">
+
+    <div class="video-container" id="player"></div>
+
+    <div class="rpg-box" id="rpgBox">
+        <h2 id="titleHeader">🎵 DBGT - Versão 8-Bits (PTUuQs90LDE)</h2>
+        <div id="lyrics-display">
+            Conectando ao sistema...<br>
+            Carregando a fita de 8-bits.<span class="cursor"></span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="playBtn" disabled>CARREGANDO...</button>
+        <button id="switchBtn" disabled>MUDAR PARA VERSÃO ORIGINAL</button>
+    </div>
+
+    <script>
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        var isPlaying = false;
+        var syncInterval;
+
+        // Iniciando no modo 8-bits
+        var currentMode = '8bit';
+
+        const videoIds = {
+            original: 'GiE83-xFhCY',
+            eightBit: 'PTUuQs90LDE'
+        };
+
+        // Letra sincronizada em espanhol (como a música)
+        const songData = [
+            { time: 0.1, text: "Tu sonrisa tan resplandeciente\n" },
+            { time: 5.5, text: "A mi corazón deja encantado\n" },
+            { time: 10.0, text: "Ven toma mi mano\n" },
+            { time: 12.0, text: "Para huir de esta terrible oscuridad\n\n" },
+
+            { time: 16.0, text: "🎵 (Instrumental...) 🎵\n\n" },
+
+            { time: 27.0, text: "En el instante en que te volví a encontrar\n" },
+            { time: 31.0, text: "Mi mente trajo a mí aquel hermoso lugar\n" },
+            { time: 34.0, text: "Que cuando era niño fue tan valioso para mí\n\n" },
+
+            { time: 41.0, text: "Quiero saber, si acaso tú conmigo quieres bailar\n" },
+            { time: 44.5, text: "Si me das tu mano te llevaré\n" },
+            { time: 47.5, text: "Por un camino cubierto de luz y obscuridad\n\n" },
+
+            { time: 53.5, text: "Tal vez sigues pensando en él\n" },
+            { time: 56.5, text: "No puedo yo saberlo\n" },
+            { time: 60.5, text: "Pero sé y entiendo que amor necesitas tú\n" },
+            { time: 63.5, text: "Y el valor para pelear en mí lo hallarás\n\n" },
+
+            { time: 67.0, text: "Mi corazón encantado vibra\n" },
+            { time: 70.5, text: "Por el polvo de esperanza y magia\n" },
+            { time: 75.5, text: "Del universo que ambicionan todos poseer\n\n" },
+
+            { time: 80.5, text: "Voy a amarte para toda la vida\n" },
+            { time: 84.0, text: "No me importa si aún no te intereso\n" },
+            { time: 89.0, text: "Ven toma mi mano\n" },
+            { time: 91.5, text: "Para huir de esta infinita obscuridad\n\n" },
+
+            // A versão de 8-bits termina aqui. A versão original continua.
+            { time: 95.0, text: "🎵 (Instrumental...) 🎵\n\n" },
+
+            { time: 105.0, text: "Sin importar qué pase yo te amaré\n" },
+            { time: 108.5, text: "Y quiero que por siempre a mi lado estés\n" },
+            { time: 112.0, text: "No vale la pena seguir pensando en el ayer\n\n" },
+
+            { time: 119.0, text: "Quiero saber, si acaso sigues tú soñando con él\n" },
+            { time: 122.5, text: "En un mar de dudas me perderé\n" },
+            { time: 126.0, text: "Y ya no encuentro el camino que me lleve hasta a ti\n\n" },
+
+            { time: 132.0, text: "Cuando al fin me logré decidir\n" },
+            { time: 135.0, text: "A confesar las cosas que siento por ti\n" },
+            { time: 138.5, text: "No sé qué me lo impidió\n" },
+            { time: 141.5, text: "Pero hoy voy a pelear con todo mi amor\n\n" },
+
+            { time: 145.0, text: "Mi corazón encantado vibra\n" },
+            { time: 149.0, text: "Por el polvo de esperanza y magia\n" },
+            { time: 154.0, text: "Te voy a demostrar que el amor que siento es real\n\n" },
+
+            { time: 158.5, text: "Voy a amarte para toda la vida\n" },
+            { time: 162.0, text: "Qué más da, ven ya no tengas miedo\n" },
+            { time: 167.5, text: "Ven toma mi mano\n" },
+            { time: 169.5, text: "Y busquemos juntos la felicidad\n\n" },
+
+            { time: 175.0, text: "✨ Reiniciando ciclo infinito... ✨\n\n" }
+        ];
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '0',
+                width: '0',
+                videoId: videoIds.eightBit, // Carrega o 8-bits por padrão
+                playerVars: { 'autoplay': 0, 'controls': 0, 'modestbranding': 1 },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('switchBtn').disabled = false;
+            document.getElementById('playBtn').innerText = "▶ INICIAR";
+            document.getElementById('lyrics-display').innerHTML = "Sistema pronto. Pressione iniciar.<span class='cursor'></span>";
+        }
+
+        let currentLyricIndex = 0;
+        const lyricsBox = document.getElementById('lyrics-display');
+        const rpgBox = document.getElementById('rpgBox');
+
+        function onPlayerStateChange(event) {
+            // Se o vídeo do YouTube terminar naturalmente, garante o loop
+            if (event.data === YT.PlayerState.ENDED) {
+                resetAndPlay();
+            }
+        }
+
+        function resetAndPlay() {
+            currentLyricIndex = 0;
+            lyricsBox.innerHTML = "<span class='cursor'></span>";
+            player.seekTo(0);
+            player.playVideo();
+        }
+
+        function updateLyrics() {
+            if (!isPlaying || typeof player.getCurrentTime !== 'function') return;
+
+            const currentTime = player.getCurrentTime();
+
+            // Limites exatos para o loop infinito de cada versão
+            // A versão 8-bits é cortada aos 106s para um ciclo perfeito.
+            let loopTimeLimit = currentMode === 'original' ? 178 : 106;
+
+            if (currentTime >= loopTimeLimit) {
+                resetAndPlay();
+                return;
+            }
+
+            if (currentLyricIndex < songData.length) {
+                if (currentTime >= songData[currentLyricIndex].time) {
+                    const cursorHTML = "<span class='cursor'></span>";
+                    lyricsBox.innerHTML = lyricsBox.innerHTML.replace(cursorHTML, "") + songData[currentLyricIndex].text + cursorHTML;
+                    rpgBox.scrollTop = rpgBox.scrollHeight;
+                    currentLyricIndex++;
+                }
+            }
+        }
+
+        // CONTROLE DE PLAY/PAUSE
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (!isPlaying) {
+                if (currentLyricIndex === 0) player.seekTo(0);
+                player.playVideo();
+                isPlaying = true;
+                document.getElementById('playBtn').innerText = "⏸ PAUSAR";
+                if (currentLyricIndex === 0) {
+                    lyricsBox.innerHTML = "<span class='cursor'></span>";
+                }
+                syncInterval = setInterval(updateLyrics, 100);
+            } else {
+                player.pauseVideo();
+                isPlaying = false;
+                document.getElementById('playBtn').innerText = "▶ CONTINUAR";
+                clearInterval(syncInterval);
+            }
+        });
+
+        // BOTÃO DE MUDANÇA DE FAIXA (8-BITS <-> ORIGINAL)
+        document.getElementById('switchBtn').addEventListener('click', () => {
+            clearInterval(syncInterval);
+            currentLyricIndex = 0;
+            lyricsBox.innerHTML = "Mudando fita de áudio...<span class='cursor'></span>";
+
+            if (currentMode === '8bit') {
+                // Muda para Original
+                currentMode = 'original';
+                player.loadVideoById(videoIds.original);
+                document.body.classList.remove('theme-8bit');
+                document.getElementById('titleHeader').innerText = "🎵 DBGT - Áudio Original (GiE83-xFhCY)";
+                document.getElementById('switchBtn').innerText = "MUDAR PARA VERSÃO 8-BITS";
+            } else {
+                // Muda para 8-Bits
+                currentMode = '8bit';
+                player.loadVideoById(videoIds.eightBit);
+                document.body.classList.add('theme-8bit');
+                document.getElementById('titleHeader').innerText = "🎵 DBGT - Versão 8-Bits (PTUuQs90LDE)";
+                document.getElementById('switchBtn').innerText = "MUDAR PARA VERSÃO ORIGINAL";
+            }
+
+            if (isPlaying) {
+                player.playVideo();
+                syncInterval = setInterval(updateLyrics, 100);
+            }
+        });
+    </script>
+</body>
+
+</html>
