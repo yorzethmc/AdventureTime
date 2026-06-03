@@ -1,115 +1,76 @@
-import { useEffect, useRef, useState } from 'react';
-
-declare global {
-  interface Window {
-    onYouTubeIframeAPIReady: () => void;
-    YT: any;
-  }
-}
-
-const VIDEO_8BIT = 'PTUuQs90LDE';
-const VIDEO_LOFI = 'GiE83-xFhCY';
+import { useRef, useState, useEffect } from 'react';
 
 const MusicPlayer = () => {
-  const playerRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [mode, setMode] = useState<'8bit' | 'lofi'>('8bit');
   const [volume, setVolume] = useState(25);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    // Inject YT script if not present
-    if (!window.YT) {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      if (firstScriptTag && firstScriptTag.parentNode) {
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      } else {
-        document.head.appendChild(tag);
-      }
-
-      window.onYouTubeIframeAPIReady = () => {
-        playerRef.current = new window.YT.Player('yt-player-hidden', {
-          height: '0',
-          width: '0',
-          videoId: VIDEO_8BIT,
-          playerVars: { autoplay: 0, controls: 0, modestbranding: 1, loop: 1, playlist: VIDEO_8BIT },
-          events: {
-            onReady: (event: any) => {
-              event.target.setVolume(volume);
-            },
-            onStateChange: (event: any) => {
-              // Force loop if ended
-              if (event.data === window.YT.PlayerState.ENDED) {
-                event.target.seekTo(0);
-                event.target.playVideo();
-              }
-            }
-          }
-        });
-      };
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
     }
-  }, []);
+  }, [volume]);
 
-  // Require first user interaction to start playing (browser autoplay policy)
+  // Handle first interaction to play music
   useEffect(() => {
     const handleInteraction = () => {
-      if (playerRef.current && typeof playerRef.current.playVideo === 'function') {
-        playerRef.current.playVideo();
+      if (!isPlaying && audioRef.current) {
+        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
       }
     };
-    window.addEventListener('click', handleInteraction);
-    window.addEventListener('touchstart', handleInteraction);
-    
+    window.addEventListener('click', handleInteraction, { once: true });
+    window.addEventListener('touchstart', handleInteraction, { once: true });
     return () => {
       window.removeEventListener('click', handleInteraction);
       window.removeEventListener('touchstart', handleInteraction);
     };
-  }, []);
+  }, [isPlaying]);
 
-  // Make sure it keeps playing if it gets paused by any browser mechanic
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (playerRef.current && typeof playerRef.current.getPlayerState === 'function') {
-        const state = playerRef.current.getPlayerState();
-        if (state === window.YT.PlayerState.PAUSED || state === window.YT.PlayerState.UNSTARTED) {
-          playerRef.current.playVideo();
-        }
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(() => {});
       }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = parseInt(e.target.value, 10);
-    if (val < 10) val = 10; // Mínimo 10% obligatorio
-    setVolume(val);
-    if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
-      playerRef.current.setVolume(val);
+      setIsPlaying(!isPlaying);
     }
   };
 
   const toggleMode = () => {
-    const newMode = mode === '8bit' ? 'lofi' : '8bit';
-    setMode(newMode);
-    
-    if (playerRef.current && typeof playerRef.current.loadVideoById === 'function') {
-      const newVideoId = newMode === '8bit' ? VIDEO_8BIT : VIDEO_LOFI;
-      playerRef.current.loadVideoById({
-        videoId: newVideoId,
-        startSeconds: 0
-      });
-      playerRef.current.setLoop(true);
-      playerRef.current.setVolume(volume);
-      playerRef.current.playVideo();
+    const nextMode = mode === '8bit' ? 'lofi' : '8bit';
+    setMode(nextMode);
+    // When changing track, ensure it plays automatically if it was already playing
+    if (isPlaying && audioRef.current) {
+      setTimeout(() => {
+        audioRef.current?.play().catch(() => {});
+      }, 50);
     }
   };
 
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVolume(parseInt(e.target.value, 10));
+  };
+
+  // We use standard HTML5 audio to prevent YouTube ads
+  const audioSrc = mode === '8bit' 
+    ? `${import.meta.env.BASE_URL}music_8bit.mp3` 
+    : `${import.meta.env.BASE_URL}music_lofi.mp3`;
+
   return (
     <div className="music-player-widget">
-      <div id="yt-player-hidden" className="hidden-player"></div>
+      <audio 
+        ref={audioRef} 
+        src={audioSrc} 
+        loop 
+        autoPlay={isPlaying}
+      />
       
       <div className="music-controls-container">
-        <div className="music-icon pulse-animation">🎧</div>
+        <div className="music-icon pulse-animation" onClick={togglePlay} style={{ cursor: 'pointer' }} title="Play/Pause">
+          {isPlaying ? '🎧' : '⏸️'}
+        </div>
         
         <div className="music-controls">
           <div className="track-info">
@@ -125,12 +86,12 @@ const MusicPlayer = () => {
               <span>🔈</span>
               <input 
                 type="range" 
-                min="10" 
+                min="0" 
                 max="100" 
                 value={volume} 
                 onChange={handleVolumeChange} 
                 className="volume-slider"
-                title="Volumen (Mínimo 10%)"
+                title="Volumen"
               />
               <span>🔊</span>
             </div>
