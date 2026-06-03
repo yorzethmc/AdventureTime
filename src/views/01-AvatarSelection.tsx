@@ -9,7 +9,7 @@ interface Props {
   updateState: (key: keyof GameState, value: string) => void;
 }
 
-const AvatarSelection = ({ onNext, gameState, updateState }: Props) => {
+const AvatarSelection = ({ onNext, updateState }: Props) => {
   const [viewingAvatarId, setViewingAvatarId] = useState<string | null>(null);
 
   const handleView = (id: string) => {
