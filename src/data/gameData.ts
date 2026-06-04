@@ -241,6 +241,13 @@ export const inventoryOptions = [
   { id: 'snacks', name: 'Snacks de Emergencia', emoji: '🍫', code: 'Supervivencia', desc: 'Permite saltarse el restaurante si no hay oro.' }
 ];
 
+export const dressCodeOptions = [
+  { id: 'casual', name: 'Casual Chic', emoji: '👕', code: 'Modo Confort', desc: 'Funciona para todo, sin pretensiones pero con estilo.' },
+  { id: 'elegant', name: 'Elegante', emoji: '👗', code: 'Modo Etiqueta', desc: 'Para impresionar. Bloquea la comida callejera, obvio.' },
+  { id: 'adventurer', name: 'Aventurero', emoji: '🥾', code: 'Modo Supervivencia', desc: 'Ropa cómoda y botas. Requerido para volcanes y montañas.' },
+  { id: 'cosplay', name: 'Cosplay / Temático', emoji: '🦊', code: 'Modo Otaku', desc: 'Llamativo y divertido. Desbloquea extra vibes en lugares anime.' }
+];
+
 export const weatherOptions = [
   { id: 'sunny', name: 'Despejado', emoji: '☀️', code: 'Cielo Claro', desc: 'Ideal para planes al aire libre y fotos.' },
   { id: 'rainy', name: 'Lluvioso', emoji: '🌧️', code: 'Días Grises', desc: 'Perfecto para estar bajo techo, con café y buena charla.' },
@@ -513,7 +520,7 @@ const periodOrder = ['morning', 'early_afternoon', 'late_afternoon', 'evening', 
 
 // Filter missions: only show missions whose periods include the current period
 // This means at 18:00 (evening), volcanes (morning/early_afternoon only) are hidden
-export const filterMissions = (time: string, transportId: string | null, avatarId: string | null = null, inventoryId: string | null = null, weatherId: string | null = null) => {
+export const filterMissions = (time: string, transportId: string | null, avatarId: string | null = null, inventoryId: string | null = null, weatherId: string | null = null, dressId: string | null = null) => {
   if (!time) return missionOptions;
 
   const currentPeriod = getTimePeriod(time);
@@ -556,11 +563,15 @@ export const filterMissions = (time: string, transportId: string | null, avatarI
     // 3. Inventory/Weather filtering
     if (weatherId === 'rainy' && mission.tags.includes('aventura') && inventoryId !== 'umbrella') return false;
 
+    // 4. Dress Code filtering
+    if (dressId === 'elegant' && (mission.tags.includes('aventura') || mission.id === 'street_burgers' || mission.id === 'tacos')) return false;
+    if (dressId !== 'adventurer' && (mission.id === 'poas' || mission.id === 'fraijanes')) return false; // Exige ropa aventurera para lugares pesados
+
     return timeValid && transportValid;
   });
 };
 
-export const filterFuel = (destId: string | null, inventoryId: string | null = null) => {
+export const filterFuel = (destId: string | null, inventoryId: string | null = null, dressId: string | null = null) => {
   if (!destId) return fuelOptions.filter(f => f.id !== 'use_snacks');
   const dest = missionOptions.find(d => d.id === destId);
   if (!dest) return fuelOptions.filter(f => f.id !== 'use_snacks');
@@ -569,6 +580,8 @@ export const filterFuel = (destId: string | null, inventoryId: string | null = n
     if (fuel.id === 'use_snacks') {
       return inventoryId === 'snacks';
     }
+    if (dressId === 'elegant' && (fuel.id === 'burger' || fuel.id === 'tacos')) return false;
+
     if (fuel.allowedDestTags.includes('all')) return true;
     return dest.tags.some(tag => fuel.allowedDestTags.includes(tag));
   });

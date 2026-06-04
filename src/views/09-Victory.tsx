@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { WHATSAPP_PHONE, avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions, inventoryOptions, weatherOptions, sideQuestOptions } from '../data/gameData';
+import { WHATSAPP_PHONE, avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions, inventoryOptions, weatherOptions, sideQuestOptions, dressCodeOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxVictory } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
@@ -30,18 +30,57 @@ const Victory = ({ gameState, onRestart }: Props) => {
   const transport = transportOptions.find(t => t.id === gameState.transportId);
   const day = dayOptions.find(d => d.id === gameState.dayId);
   const dest = missionOptions.find(m => m.id === gameState.destId);
-  const sideQuest = sideQuestOptions.find(s => s.id === gameState.sideQuestId);
+  const sideQuest = sideQuestOptions.find(s => s.id === gameState.sideQuestId) || (gameState.sideQuestId === 'random_cat_pet' ? { name: 'Acarició al michi' } : gameState.sideQuestId === 'random_cat_ignore' ? { name: 'Ignoró al michi' } : null);
   const fuel = fuelOptions.find(f => f.id === gameState.fuelId);
+  const dressCode = dressCodeOptions.find(d => d.id === gameState.dressId);
+
+  // Calcular Stats RPG
+  let aventura = 0;
+  let romance = 0;
+  let chill = 0;
+
+  if (dest?.tags.includes('aventura')) aventura += 40;
+  if (dest?.tags.includes('naturaleza')) { aventura += 20; chill += 10; }
+  if (dest?.tags.includes('atardecer')) { romance += 40; chill += 20; }
+  if (dest?.tags.includes('cafe')) { chill += 30; romance += 20; }
+  if (dest?.tags.includes('chill')) chill += 40;
+  if (dest?.tags.includes('cine')) { romance += 30; chill += 20; }
+  if (dest?.tags.includes('cena')) romance += 15;
+
+  if (gameState.weatherId === 'rainy') chill += 20;
+  if (gameState.weatherId === 'sunny') aventura += 20;
+
+  if (gameState.dressId === 'elegant') romance += 30;
+  if (gameState.dressId === 'adventurer') aventura += 30;
+  if (gameState.dressId === 'casual') chill += 20;
+
+  if (gameState.transportId === 'moto') aventura += 20;
+  if (gameState.transportId === 'chancha') aventura += 10;
+
+  if (gameState.sideQuestId === 'random_cat_pet') { romance += 20; chill += 20; }
+  if (gameState.sideQuestId === 'random_cat_ignore') romance -= 20;
+  if (gameState.sideQuestId === 'photo') romance += 10;
+  if (gameState.sideQuestId === 'scenic') romance += 20;
+  if (gameState.sideQuestId === 'playlist') chill += 20;
+
+  const getStars = (score: number) => {
+    if (score >= 80) return '⭐⭐⭐⭐⭐';
+    if (score >= 60) return '⭐⭐⭐⭐';
+    if (score >= 40) return '⭐⭐⭐';
+    if (score >= 20) return '⭐⭐';
+    return '⭐';
+  };
 
   const whatsappText = `✨ Misión Aceptada ✨
 
 Avatar: ${avatar?.name}
 Equipo/Acompañante: ${inventory?.name}
 Clima previsto: ${weather?.name}
+Outfit: ${dressCode?.name || 'Cualquiera'}
 Transporte: ${transport?.name}
 Día: ${day?.name} a las ${gameState.time}
 Misión Principal: ${dest?.dest}
-Desvío Opcional: ${sideQuest?.name}
+Desvío Opcional: ${sideQuest?.name || 'Ninguno'}
 Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
 
 🛡️ Probabilidad de Éxito: ${successRate}%
@@ -100,6 +139,23 @@ Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
       
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
         <Typewriter text="¡Nivel completado! Tu progreso ha sido guardado. Ahora envíale este pergamino a tu Player 2 por WhatsApp para hacer oficial la partida." speed={30} />
+      </div>
+
+      <div className="rpg-card text-left mt-3 mb-3" style={{ background: 'rgba(15, 23, 42, 0.9)', padding: '15px' }}>
+        <h3 style={{ color: 'var(--text-highlight)', fontSize: '0.8rem', borderBottom: '1px dashed var(--panel-border)', paddingBottom: '10px', marginBottom: '10px' }}>Estadísticas de Relación</h3>
+        
+        <div className="flex-between mb-2">
+          <span className="text-pixel" style={{ fontSize: '0.65rem' }}>🏹 Aventura</span>
+          <span style={{ fontSize: '0.8rem' }}>{getStars(aventura)}</span>
+        </div>
+        <div className="flex-between mb-2">
+          <span className="text-pixel" style={{ fontSize: '0.65rem' }}>💕 Romance</span>
+          <span style={{ fontSize: '0.8rem' }}>{getStars(romance)}</span>
+        </div>
+        <div className="flex-between">
+          <span className="text-pixel" style={{ fontSize: '0.65rem' }}>🎧 Chill / Relax</span>
+          <span style={{ fontSize: '0.8rem' }}>{getStars(chill)}</span>
+        </div>
       </div>
 
       <div className="flex-center mt-3 mb-3">

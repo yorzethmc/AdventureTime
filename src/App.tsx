@@ -11,6 +11,7 @@ import MissionBriefing from './views/02-MissionBriefing';
 import SadEnding from './views/03-SadEnding';
 import Inventory from './views/03b-Inventory';
 import Weather from './views/03c-Weather';
+import DressCode from './views/05b-DressCode';
 import Transport from './views/04-Transport';
 import DateTime from './views/05-DateTime';
 import Destinations from './views/06-Destinations';
@@ -23,6 +24,7 @@ export interface GameState {
   avatarId: string | null;
   inventoryId: string | null;
   weatherId: string | null;
+  dressId: string | null;
   transportId: string | null;
   dayId: string | null;
   time: string | null;
@@ -38,6 +40,7 @@ const App = () => {
     avatarId: null,
     inventoryId: null,
     weatherId: null,
+    dressId: null,
     transportId: null,
     dayId: null,
     time: null,
@@ -110,26 +113,30 @@ const App = () => {
                   updateState={updateGameState as any} 
                />;
       case 6:
-        return <Transport 
+        return <DressCode 
                   onNext={nextStep} 
                   gameState={gameState} 
                   updateState={updateGameState as any} 
                />;
       case 7:
-        return <DateTime 
+        return <Transport 
                   onNext={nextStep} 
                   gameState={gameState} 
                   updateState={updateGameState as any} 
                />;
       case 8:
+        return <DateTime 
+                  onNext={nextStep} 
+                  gameState={gameState} 
+                  updateState={updateGameState as any} 
+               />;
+      case 9:
         return <Destinations 
                   onNext={() => {
                     const mission = missionOptions.find(m => m.id === gameState.destId);
                     if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe'))) {
                       updateGameState('fuelId', null as any);
-                      goToStep(11); // Skip Fuel and SideQuests if going straight to eating? Wait, SideQuests are before Fuel. Let's let them do side quests.
-                      // Actually, if we want them to do SideQuests even if they eat:
-                      goToStep(9);
+                      goToStep(10); // SideQuests are now step 10
                     } else {
                       nextStep();
                     }
@@ -137,39 +144,40 @@ const App = () => {
                   gameState={gameState} 
                   updateState={updateGameState as any} 
                />;
-      case 9:
+      case 10:
         return <SideQuests 
                   onNext={() => {
                     // Check if fuel should be skipped
                     const mission = missionOptions.find(m => m.id === gameState.destId);
                     if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe'))) {
                       updateGameState('fuelId', null as any);
-                      goToStep(11); // BossBattle
+                      goToStep(12); // BossBattle is now 12
                     } else {
-                      nextStep(); // Fuel
+                      nextStep(); // Fuel is 11
                     }
                   }} 
                   gameState={gameState} 
                   updateState={updateGameState as any} 
                />;
-      case 10:
+      case 11:
         return <Fuel 
                   onNext={nextStep} 
                   gameState={gameState} 
                   updateState={updateGameState as any} 
                />;
-      case 11:
+      case 12:
         return <BossBattle 
                   onConfirm={nextStep} 
                   onEdit={() => goToStep(4)} 
                   gameState={gameState} 
                />;
-      case 12:
+      case 13:
         return <Victory gameState={gameState} onRestart={() => {
           setGameState({
             avatarId: null,
             inventoryId: null,
             weatherId: null,
+            dressId: null,
             transportId: null,
             dayId: null,
             time: null,
@@ -191,7 +199,7 @@ const App = () => {
       <MusicPlayer />
       <div className="scanlines" />
       <div className="app-container screen-enter" key={`step-${currentStep}`} onClick={handleInteraction}>
-        {currentStep > 0 && currentStep !== 3 && currentStep !== 12 && (
+        {currentStep > 0 && currentStep !== 3 && currentStep !== 13 && (
           <div className="status-bar fade-in">
             <span>HP: 100/100</span>
             <span style={{ color: '#ffd43b' }}>🪙 ORO: {calculateRemainingGold(gameState.transportId, gameState.destId, gameState.fuelId, gameState.haggleDiscount)}</span>
