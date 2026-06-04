@@ -479,21 +479,21 @@ export const dayOptions = [
     name: 'Viernes',
     emoji: '🌃',
     minTime: '18:00',
-    maxTime: '23:00'
+    maxTime: '20:00'
   },
   {
     id: 'sabado',
     name: 'Sábado',
     emoji: '🍕',
     minTime: '13:00',
-    maxTime: '23:59'
+    maxTime: '20:00'
   },
   {
     id: 'domingo',
     name: 'Domingo',
     emoji: '☀️',
     minTime: '08:00',
-    maxTime: '21:00'
+    maxTime: '20:00'
   }
 ];
 

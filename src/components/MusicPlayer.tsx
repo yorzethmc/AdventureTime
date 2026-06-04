@@ -5,7 +5,8 @@ const MusicPlayer = () => {
   const [mode, setMode] = useState<'8bit' | 'lofi'>('8bit');
   const [volume, setVolume] = useState(25);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -60,6 +61,8 @@ const MusicPlayer = () => {
     ? `${import.meta.env.BASE_URL}music_8bit.m4a` 
     : `${import.meta.env.BASE_URL}music_lofi.m4a`;
 
+  if (isHidden) return null;
+
   return (
     <div className="music-player-widget">
       <audio 
@@ -69,7 +72,16 @@ const MusicPlayer = () => {
         autoPlay={isPlaying}
       />
       
-      <div className="music-controls-container" style={{ padding: isCollapsed ? '8px' : '12px 15px' }}>
+      <div className="music-controls-container" style={{ padding: isCollapsed ? '8px' : '12px 15px', position: 'relative' }}>
+        {isCollapsed && (
+          <div 
+            onClick={(e) => { e.stopPropagation(); setIsHidden(true); }}
+            style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ff6b6b', color: 'white', borderRadius: '50%', width: '16px', height: '16px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, boxShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
+            title="Ocultar música"
+          >
+            ×
+          </div>
+        )}
         <div 
           className="music-icon pulse-animation" 
           title="Música"
@@ -81,6 +93,13 @@ const MusicPlayer = () => {
         
         {!isCollapsed && (
           <div className="music-controls">
+            <div 
+              onClick={(e) => { e.stopPropagation(); setIsHidden(true); }}
+              style={{ position: 'absolute', top: '5px', right: '5px', color: '#ff6b6b', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+              title="Ocultar música"
+            >
+              [X]
+            </div>
             <div className="track-info">
               <span>Now Playing: {mode === '8bit' ? 'Mi Corazón Encantado (8-Bit)' : 'Mi Corazón Encantado (Lo-Fi)'}</span>
             </div>

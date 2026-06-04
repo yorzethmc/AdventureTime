@@ -26,12 +26,16 @@ const GameBackground = ({ currentStep = 0 }: Props) => {
       case 1: return `${base}backgrounds/bg_avatar.png`;
       case 2: return `${base}backgrounds/bg_mission.png`;
       case 3: return `${base}backgrounds/bg_mission.png`; // sad ending
-      case 4: return `${base}backgrounds/bg_transport.png`;
-      case 5: return `${base}backgrounds/bg_time.png`;
-      case 6: return `${base}backgrounds/bg_transport.png`; // destinations
-      case 7: return `${base}backgrounds/bg_fuel.png`;
-      case 8: return `${base}backgrounds/bg_fuel.png`; // boss battle
-      case 9: return `${base}backgrounds/bg_summary.png`;
+      case 4: return `${base}backgrounds/bg_transport.png`; // inventory
+      case 5: return `${base}backgrounds/bg_time.png`; // weather
+      case 6: return `${base}backgrounds/bg_avatar.png`; // dress code
+      case 7: return `${base}backgrounds/bg_transport.png`; // transport
+      case 8: return `${base}backgrounds/bg_time.png`; // datetime
+      case 9: return `${base}backgrounds/bg_mission.png`; // destinations
+      case 10: return `${base}backgrounds/bg_mission.png`; // side quests
+      case 11: return `${base}backgrounds/bg_fuel.png`; // fuel
+      case 12: return `${base}backgrounds/bg_fuel.png`; // boss battle
+      case 13: return `${base}backgrounds/bg_summary.png`; // victory
       default: return `${base}backgrounds/bg_splash.png`;
     }
   };
