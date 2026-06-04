@@ -60,9 +60,9 @@ Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
         <h2 style={{ color: '#e2e8f0', fontSize: '1rem', marginTop: '10px' }}>¡Easter Egg Desbloqueado!</h2>
         
         <div className="mt-3" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <img src="https://emoji.discord.st/emojis/b7ef40c8-03ac-4367-9543-d705f48892e3.gif" alt="Ditto" width="100" />
-          <img src="https://emoji.discord.st/emojis/b7ef40c8-03ac-4367-9543-d705f48892e3.gif" alt="Ditto" width="100" />
-          <img src="https://emoji.discord.st/emojis/b7ef40c8-03ac-4367-9543-d705f48892e3.gif" alt="Ditto" width="100" />
+          {Array.from({ length: 9 }).map((_, i) => (
+            <img key={i} src="https://emoji.discord.st/emojis/b7ef40c8-03ac-4367-9543-d705f48892e3.gif" alt="Ditto" width="80" />
+          ))}
         </div>
 
         <button className="btn-retro mt-3" onClick={() => setShowEasterEgg(false)} style={{ backgroundColor: '#ff66c4', color: '#000', textShadow: 'none' }}>
