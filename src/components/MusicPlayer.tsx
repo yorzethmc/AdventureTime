@@ -5,6 +5,7 @@ const MusicPlayer = () => {
   const [mode, setMode] = useState<'8bit' | 'lofi'>('8bit');
   const [volume, setVolume] = useState(25);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -68,36 +69,43 @@ const MusicPlayer = () => {
         autoPlay={isPlaying}
       />
       
-      <div className="music-controls-container">
-        <div className="music-icon pulse-animation" title="Música">
+      <div className="music-controls-container" style={{ padding: isCollapsed ? '8px' : '12px 15px' }}>
+        <div 
+          className="music-icon pulse-animation" 
+          title="Música"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          style={{ cursor: 'pointer', margin: 0 }}
+        >
           🎧
         </div>
         
-        <div className="music-controls">
-          <div className="track-info">
-            <span>Now Playing: {mode === '8bit' ? 'Mi Corazón Encantado (8-Bit)' : 'Mi Corazón Encantado (Lo-Fi)'}</span>
-          </div>
+        {!isCollapsed && (
+          <div className="music-controls">
+            <div className="track-info">
+              <span>Now Playing: {mode === '8bit' ? 'Mi Corazón Encantado (8-Bit)' : 'Mi Corazón Encantado (Lo-Fi)'}</span>
+            </div>
 
-          <div className="control-row">
-            <button className="btn-track-switch" onClick={toggleMode}>
-              Cambiar a {mode === '8bit' ? 'Lo-Fi 🎵' : '8-Bit 👾'}
-            </button>
+            <div className="control-row">
+              <button className="btn-track-switch" onClick={toggleMode}>
+                Cambiar a {mode === '8bit' ? 'Lo-Fi 🎵' : '8-Bit 👾'}
+              </button>
 
-            <div className="volume-control">
-              <span>🔈</span>
-              <input 
-                type="range" 
-                min="0" 
-                max="100" 
-                value={volume} 
-                onChange={handleVolumeChange} 
-                className="volume-slider"
-                title="Volumen"
-              />
-              <span>🔊</span>
+              <div className="volume-control">
+                <span>🔈</span>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="100" 
+                  value={volume} 
+                  onChange={handleVolumeChange} 
+                  className="volume-slider"
+                  title="Volumen"
+                />
+                <span>🔊</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -37,14 +37,9 @@ const MissionBriefing = ({ onAccept, onReject, gameState }: Props) => {
   };
 
   const moveButton = useCallback(() => {
-    const padding = 20;
-    const btnW = 200;
-    const btnH = 50;
-    const maxX = window.innerWidth - btnW - padding;
-    const maxY = window.innerHeight - btnH - padding;
-
-    const newX = Math.max(padding, Math.floor(Math.random() * maxX));
-    const newY = Math.max(padding, Math.floor(Math.random() * maxY));
+    // Usar porcentajes (vw, vh) para garantizar que siempre esté visible sin importar el tamaño en px
+    const newX = Math.max(5, Math.floor(Math.random() * 60)); // 5vw a 65vw
+    const newY = Math.max(10, Math.floor(Math.random() * 80)); // 10vh a 90vh
 
     setBtnPosition({ x: newX, y: newY });
     setIsEvading(true);
@@ -147,9 +142,9 @@ const MissionBriefing = ({ onAccept, onReject, gameState }: Props) => {
               onTouchStart={handleRejectClick}
               style={{
                 position: 'fixed',
-                left: `${btnPosition.x}px`,
-                top: `${btnPosition.y}px`,
-                zIndex: 50, // BELOW the accept button's z-index
+                left: `${btnPosition.x}vw`,
+                top: `${btnPosition.y}vh`,
+                zIndex: 9999, // Super high z-index para que nada lo tape
                 transition: 'none',
                 whiteSpace: 'nowrap',
               }}
