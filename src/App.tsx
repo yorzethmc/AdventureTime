@@ -20,6 +20,7 @@ import Fuel from './views/07-Fuel';
 import BossBattle from './views/08-BossBattle';
 import Victory from './views/09-Victory';
 import EventScreen, { rollForEvent } from './views/EventScreen';
+import ConversationPrompt, { conversationQuestions, questionTriggers } from './views/ConversationPrompt';
 
 export interface GameState {
   avatarId: string | null;
@@ -33,12 +34,15 @@ export interface GameState {
   sideQuestId: string | null;
   fuelId: string | null;
   haggleDiscount: number;
+  responses: Record<string, string>;
 }
 
 const App = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [activeEvent, setActiveEvent] = useState<string | null>(null);
   const [pendingStep, setPendingStep] = useState<number | null>(null);
+  const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
+  const [questionPendingStep, setQuestionPendingStep] = useState<number | null>(null);
   const [gameState, setGameState] = useState<GameState>({
     avatarId: null,
     inventoryId: null,
@@ -50,7 +54,8 @@ const App = () => {
     destId: null,
     sideQuestId: null,
     fuelId: null,
-    haggleDiscount: 0
+    haggleDiscount: 0,
+    responses: {}
   });
 
   const [audioInitialized, setAudioInitialized] = useState(false);
@@ -76,7 +81,14 @@ const App = () => {
   const nextStep = () => {
     const next = currentStep + 1;
     
-    // Motor de eventos: cada breakpoint tiene un pool de NPCs posibles
+    // 1. Verificar si hay pregunta conversacional para este paso
+    if (questionTriggers[next] !== undefined && !gameState.responses[conversationQuestions[questionTriggers[next]].id]) {
+      setActiveQuestion(questionTriggers[next]);
+      setQuestionPendingStep(next);
+      return;
+    }
+
+    // 2. Motor de eventos: cada breakpoint tiene un pool de NPCs posibles
     let trigger: string | null = null;
     
     if (next === 5) trigger = 'after_inventory';
@@ -96,6 +108,35 @@ const App = () => {
     setCurrentStep(next);
   };
 
+  const handleConversationAnswer = (questionId: string, answer: string) => {
+    setGameState(prev => ({
+      ...prev,
+      responses: { ...prev.responses, [questionId]: answer }
+    }));
+    if (questionPendingStep !== null) {
+      const pendingNext = questionPendingStep;
+      setActiveQuestion(null);
+      setQuestionPendingStep(null);
+      
+      // After answering, check for NPC events at this step too
+      let trigger: string | null = null;
+      if (pendingNext === 5) trigger = 'after_inventory';
+      else if (pendingNext === 8) trigger = 'after_transport';
+      else if (pendingNext === 10) trigger = 'after_destinations';
+      else if (pendingNext === 12) trigger = 'after_fuel';
+      
+      if (trigger) {
+        const eventId = rollForEvent(trigger);
+        if (eventId) {
+          setPendingStep(pendingNext);
+          setActiveEvent(eventId);
+          return;
+        }
+      }
+      setCurrentStep(pendingNext);
+    }
+  };
+
 
 
   const goToStep = (step: number) => {
@@ -105,6 +146,18 @@ const App = () => {
 
 
   const renderStep = () => {
+    // Pregunta conversacional activa
+    if (activeQuestion !== null) {
+      const q = conversationQuestions[activeQuestion];
+      return (
+        <ConversationPrompt
+          question={q}
+          onAnswer={handleConversationAnswer}
+        />
+      );
+    }
+
+    // Evento NPC activo
     if (activeEvent && pendingStep !== null) {
       return (
         <EventScreen 
@@ -228,7 +281,8 @@ const App = () => {
             destId: null,
             sideQuestId: null,
             fuelId: null,
-            haggleDiscount: 0
+            haggleDiscount: 0,
+            responses: {}
           });
           goToStep(0);
         }} />;

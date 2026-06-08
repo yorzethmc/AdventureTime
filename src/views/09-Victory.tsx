@@ -83,6 +83,13 @@ Misión Principal: ${dest?.dest}
 Desvío Opcional: ${sideQuest?.name || 'Ninguno'}
 Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
 
+💬 Sus respuestas:
+${gameState.responses.mood ? `• Mood: "${gameState.responses.mood}"` : ''}
+${gameState.responses.plan_vibe ? `• Energía: ${gameState.responses.plan_vibe}` : ''}
+${gameState.responses.song ? `• Canción: "${gameState.responses.song}"` : ''}
+${gameState.responses.nervous ? `• ¿Nerviosa?: ${gameState.responses.nervous}` : ''}
+${gameState.responses.wish ? `• Deseo especial: "${gameState.responses.wish}"` : ''}
+
 🛡️ Probabilidad de Éxito: ${successRate}%
 🎵 Reto Especial: "Te enviaré un audio cantando el opening de Corazón Encantado para confirmar esta misión."
 
@@ -166,6 +173,43 @@ Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
           <span style={{ fontSize: '0.8rem' }}>{getStars(chill)}</span>
         </div>
       </div>
+
+      {Object.keys(gameState.responses).length > 0 && (
+        <div className="rpg-card text-left mt-3 mb-3" style={{ background: 'rgba(232, 121, 249, 0.1)', padding: '15px', borderColor: '#e879f9' }}>
+          <h3 style={{ color: '#e879f9', fontSize: '0.8rem', borderBottom: '1px dashed #e879f966', paddingBottom: '10px', marginBottom: '10px' }}>💬 Lo que ella dijo</h3>
+          
+          {gameState.responses.mood && (
+            <div className="mb-2">
+              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Su mood:</span>
+              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>"{gameState.responses.mood}"</p>
+            </div>
+          )}
+          {gameState.responses.plan_vibe && (
+            <div className="mb-2">
+              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Energía que quiere:</span>
+              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>{gameState.responses.plan_vibe}</p>
+            </div>
+          )}
+          {gameState.responses.song && (
+            <div className="mb-2">
+              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Canción que la describe:</span>
+              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>🎵 "{gameState.responses.song}"</p>
+            </div>
+          )}
+          {gameState.responses.nervous && (
+            <div className="mb-2">
+              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>¿Nerviosa?:</span>
+              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>{gameState.responses.nervous}</p>
+            </div>
+          )}
+          {gameState.responses.wish && (
+            <div className="mb-2">
+              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Deseo especial:</span>
+              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>🌟 "{gameState.responses.wish}"</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex-center mt-3 mb-3">
         <a 
