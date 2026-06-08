@@ -19,6 +19,7 @@ import SideQuests from './views/06b-SideQuests';
 import Fuel from './views/07-Fuel';
 import BossBattle from './views/08-BossBattle';
 import Victory from './views/09-Victory';
+import EventScreen from './views/EventScreen';
 
 export interface GameState {
   avatarId: string | null;
@@ -36,6 +37,8 @@ export interface GameState {
 
 const App = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [activeEvent, setActiveEvent] = useState<string | null>(null);
+  const [pendingStep, setPendingStep] = useState<number | null>(null);
   const [gameState, setGameState] = useState<GameState>({
     avatarId: null,
     inventoryId: null,
@@ -71,7 +74,40 @@ const App = () => {
   };
 
   const nextStep = () => {
-    setCurrentStep(prev => prev + 1);
+    const next = currentStep + 1;
+    
+    // Motor de eventos (50% de probabilidad en ciertos breakpoints)
+    const diceRoll = Math.random();
+    
+    if (next === 5 && diceRoll < 0.5) {
+      // Después de Inventory (Paso 4) -> Camino a Weather (5)
+      setPendingStep(next);
+      setActiveEvent('knight');
+      return;
+    }
+    
+    if (next === 8 && diceRoll < 0.5) {
+      // Después de Transport (Paso 7) -> Camino a DateTime (8)
+      setPendingStep(next);
+      setActiveEvent('merchant');
+      return;
+    }
+    
+    if (next === 10 && diceRoll < 0.5) {
+      // Después de Destinations (Paso 9) -> Camino a SideQuests (10)
+      setPendingStep(next);
+      setActiveEvent(Math.random() < 0.5 ? 'slime' : 'thief');
+      return;
+    }
+    
+    if (next === 12 && diceRoll < 0.5) { // BossBattle is 12, Fuel is 11
+      // Después de Fuel -> Camino a Boss
+      setPendingStep(next);
+      setActiveEvent('fortune_teller');
+      return;
+    }
+
+    setCurrentStep(next);
   };
 
 
@@ -83,6 +119,21 @@ const App = () => {
 
 
   const renderStep = () => {
+    if (activeEvent && pendingStep !== null) {
+      return (
+        <EventScreen 
+          eventId={activeEvent} 
+          gameState={gameState} 
+          updateState={updateGameState} 
+          onResolve={() => {
+            setActiveEvent(null);
+            setCurrentStep(pendingStep);
+            setPendingStep(null);
+          }} 
+        />
+      );
+    }
+
     switch (currentStep) {
       case 0:
         return <Splash onNext={nextStep} onInteract={handleInteraction} />;
@@ -151,7 +202,13 @@ const App = () => {
                     const mission = missionOptions.find(m => m.id === gameState.destId);
                     if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe'))) {
                       updateGameState('fuelId', null as any);
-                      goToStep(12); // BossBattle is now 12
+                      // Custom routing bypassing normal nextStep, check event here too:
+                      if (Math.random() < 0.5) {
+                        setPendingStep(12);
+                        setActiveEvent('fortune_teller');
+                      } else {
+                        goToStep(12);
+                      }
                     } else {
                       nextStep(); // Fuel is 11
                     }

@@ -84,6 +84,8 @@ Desvío Opcional: ${sideQuest?.name || 'Ninguno'}
 Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
 
 🛡️ Probabilidad de Éxito: ${successRate}%
+🎵 Reto Especial: "Te enviaré un audio cantando el opening de Corazón Encantado para confirmar esta misión."
+
 ⭐ ¡P1 READY!
 ¿Qué tal el plan? 🚀`;
 
@@ -138,7 +140,14 @@ Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
       <h1 style={{ color: 'var(--success)', fontSize: '2rem', animation: 'float 2s infinite, pulse 2s infinite' }}>CITA DESBLOQUEADA</h1>
       
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
-        <Typewriter text="¡Nivel completado! Tu progreso ha sido guardado. Ahora envíale este pergamino a tu Player 2 por WhatsApp para hacer oficial la partida." speed={30} />
+        <Typewriter text="¡Nivel completado! Tu progreso ha sido guardado. Pero antes de terminar..." speed={30} />
+      </div>
+
+      <div className="rpg-card mt-3 mb-3" style={{ background: 'rgba(255, 107, 107, 0.2)', borderColor: '#ff6b6b', padding: '15px' }}>
+        <h3 style={{ color: '#ff6b6b', fontSize: '1rem', marginBottom: '10px' }}>🎤 MISIÓN FINAL 🎤</h3>
+        <p className="text-pixel" style={{ fontSize: '0.75rem', lineHeight: '1.5' }}>
+          Para validar este plan, debes enviarle a tu Player 2 un mensaje de voz por WhatsApp cantando el opening de <strong>Dragon Ball GT (Mi Corazón Encantado)</strong> junto con la confirmación. ¡Es obligatorio para poder avanzar!
+        </p>
       </div>
 
       <div className="rpg-card text-left mt-3 mb-3" style={{ background: 'rgba(15, 23, 42, 0.9)', padding: '15px' }}>
