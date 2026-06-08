@@ -19,7 +19,7 @@ import SideQuests from './views/06b-SideQuests';
 import Fuel from './views/07-Fuel';
 import BossBattle from './views/08-BossBattle';
 import Victory from './views/09-Victory';
-import EventScreen from './views/EventScreen';
+import EventScreen, { rollForEvent } from './views/EventScreen';
 
 export interface GameState {
   avatarId: string | null;
@@ -76,35 +76,21 @@ const App = () => {
   const nextStep = () => {
     const next = currentStep + 1;
     
-    // Motor de eventos (50% de probabilidad en ciertos breakpoints)
-    const diceRoll = Math.random();
+    // Motor de eventos: cada breakpoint tiene un pool de NPCs posibles
+    let trigger: string | null = null;
     
-    if (next === 5 && diceRoll < 0.5) {
-      // Después de Inventory (Paso 4) -> Camino a Weather (5)
-      setPendingStep(next);
-      setActiveEvent('knight');
-      return;
-    }
+    if (next === 5) trigger = 'after_inventory';
+    else if (next === 8) trigger = 'after_transport';
+    else if (next === 10) trigger = 'after_destinations';
+    else if (next === 12) trigger = 'after_fuel';
     
-    if (next === 8 && diceRoll < 0.5) {
-      // Después de Transport (Paso 7) -> Camino a DateTime (8)
-      setPendingStep(next);
-      setActiveEvent('merchant');
-      return;
-    }
-    
-    if (next === 10 && diceRoll < 0.5) {
-      // Después de Destinations (Paso 9) -> Camino a SideQuests (10)
-      setPendingStep(next);
-      setActiveEvent(Math.random() < 0.5 ? 'slime' : 'thief');
-      return;
-    }
-    
-    if (next === 12 && diceRoll < 0.5) { // BossBattle is 12, Fuel is 11
-      // Después de Fuel -> Camino a Boss
-      setPendingStep(next);
-      setActiveEvent('fortune_teller');
-      return;
+    if (trigger) {
+      const eventId = rollForEvent(trigger);
+      if (eventId) {
+        setPendingStep(next);
+        setActiveEvent(eventId);
+        return;
+      }
     }
 
     setCurrentStep(next);
@@ -202,10 +188,11 @@ const App = () => {
                     const mission = missionOptions.find(m => m.id === gameState.destId);
                     if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe'))) {
                       updateGameState('fuelId', null as any);
-                      // Custom routing bypassing normal nextStep, check event here too:
-                      if (Math.random() < 0.5) {
+                      // Use event engine for custom routing too
+                      const ev = rollForEvent('after_fuel');
+                      if (ev) {
                         setPendingStep(12);
-                        setActiveEvent('fortune_teller');
+                        setActiveEvent(ev);
                       } else {
                         goToStep(12);
                       }
