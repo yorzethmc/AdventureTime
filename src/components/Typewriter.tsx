@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { playTone } from '../utils/audio';
 
 interface Props {
@@ -10,11 +10,18 @@ interface Props {
 const Typewriter = ({ text, speed = 30, onComplete }: Props) => {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const completedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   // Reset when text changes
   useEffect(() => {
     setDisplayedText('');
     setCurrentIndex(0);
+    completedRef.current = false;
   }, [text]);
 
   useEffect(() => {
@@ -32,11 +39,12 @@ const Typewriter = ({ text, speed = 30, onComplete }: Props) => {
       
       return () => clearTimeout(timeout);
     } else {
-      if (onComplete) {
-        onComplete();
+      if (onCompleteRef.current && !completedRef.current) {
+        completedRef.current = true;
+        onCompleteRef.current();
       }
     }
-  }, [currentIndex, text, speed, onComplete]);
+  }, [currentIndex, text, speed]);
 
   return <span>{displayedText}</span>;
 };
