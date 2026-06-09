@@ -18,6 +18,7 @@ import Destinations from './views/06-Destinations';
 import SideQuests from './views/06b-SideQuests';
 import Fuel from './views/07-Fuel';
 import BossBattle from './views/08-BossBattle';
+import FourthWall from './views/13-FourthWall';
 import Victory from './views/09-Victory';
 import EventScreen, { rollForEvent } from './views/EventScreen';
 import ConversationPrompt, { conversationQuestions, questionTriggers } from './views/ConversationPrompt';
@@ -137,13 +138,9 @@ const App = () => {
     }
   };
 
-
-
   const goToStep = (step: number) => {
     setCurrentStep(step);
   };
-
-
 
   const renderStep = () => {
     // Pregunta conversacional activa
@@ -269,6 +266,8 @@ const App = () => {
                   gameState={gameState} 
                />;
       case 13:
+        return <FourthWall onNext={nextStep} />;
+      case 14:
         return <Victory gameState={gameState} onRestart={() => {
           setGameState({
             avatarId: null,
@@ -291,17 +290,27 @@ const App = () => {
     }
   };
 
+  const getAvatarName = (id: string | null): string => {
+    const names: Record<string, string> = {
+      mage: 'Maga Estelar', explorer: 'Exploradora', princess_random: 'Princesa Random',
+      gemini: 'Gemela Cósmica', warrior: 'Caballera del Caos', bard: 'Barda Lo-Fi',
+      vampire: 'Vampiresa', healer_glam: 'Sanadora Aesthetic', necromancer_goth: 'Nigromante',
+      hunter_athletic: 'Cazadora Acrobática'
+    };
+    return names[id || ''] || 'P1 READY';
+  };
+
   return (
     <>
       <GameBackground currentStep={currentStep} />
       <MusicPlayer />
       <div className="scanlines" />
       <div className="app-container screen-enter" key={`step-${currentStep}`} onClick={handleInteraction}>
-        {currentStep > 0 && currentStep !== 3 && currentStep !== 13 && (
+        {currentStep > 0 && currentStep !== 3 && currentStep !== 13 && currentStep !== 14 && (
           <div className="status-bar fade-in">
             <span>HP: 100/100</span>
             <span style={{ color: '#ffd43b' }}>🪙 ORO: {calculateRemainingGold(gameState.transportId, gameState.destId, gameState.fuelId, gameState.haggleDiscount)}</span>
-            <span>{gameState.avatarId ? 'P1 READY' : 'NO AVATAR'}</span>
+            <span>{gameState.avatarId ? getAvatarName(gameState.avatarId) : 'NO AVATAR'}</span>
           </div>
         )}
         {renderStep()}

@@ -1,16 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { WHATSAPP_PHONE, avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions, inventoryOptions, weatherOptions, sideQuestOptions, dressCodeOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxVictory } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
+import { getPlayerMood, getPlayerEnergy, getPlayerSong, getPlayerNervousness, getPlayerWish } from '../utils/memory';
 
 interface Props {
   gameState: GameState;
   onRestart: () => void;
 }
 
+const finalChallenges = [
+  "Cantar el opening de Dragon Ball GT (Mi Corazón Encantado) en un mensaje de voz.",
+  "Enviar un audio imitando a un narrador de documentales describiendo cómo aceptaste esta misión.",
+  "Mandar un audio cantando el estribillo de tu canción favorita de Disney.",
+  "Enviar un mensaje de voz actuando como si estuvieras reportando una misión secreta desde una radio militar.",
+  "Mandar un audio diciendo 'Acepto el reto' con el acento más exagerado que te salga (español, argentino, colombiano, etc).",
+  "Cantar un pedacito de la última canción que escuchaste en Spotify.",
+  "Enviar un audio recitando un poema inventado en 10 segundos sobre por qué aceptaste el plan."
+];
+
 const Victory = ({ gameState, onRestart }: Props) => {
   const [showEasterEgg, setShowEasterEgg] = useState(false);
+  
+  // Select a random challenge on mount
+  const challenge = useMemo(() => {
+    return finalChallenges[Math.floor(Math.random() * finalChallenges.length)];
+  }, []);
+
   const [successRate] = useState(() => {
     const hash = (gameState.avatarId?.length || 0) + (gameState.transportId?.length || 0) + (gameState.destId?.length || 0);
     let rate = 85 + (hash % 15);
@@ -33,6 +50,16 @@ const Victory = ({ gameState, onRestart }: Props) => {
   const sideQuest = sideQuestOptions.find(s => s.id === gameState.sideQuestId) || (gameState.sideQuestId === 'random_cat_pet' ? { name: 'Acarició al michi' } : gameState.sideQuestId === 'random_cat_ignore' ? { name: 'Ignoró al michi' } : null);
   const fuel = fuelOptions.find(f => f.id === gameState.fuelId);
   const dressCode = dressCodeOptions.find(d => d.id === gameState.dressId);
+
+  // Título dinámico
+  const dynamicTitle = `La Expedición de ${avatar?.name || 'la Aventurera'} ${dest?.dest.includes('Volcán') ? 'hacia las Alturas' : dest?.dest.includes('Chino') ? 'por el Barrio Chino' : 'hacia ' + (dest?.dest || 'lo Desconocido')}`;
+
+  // Helper values
+  const mood = getPlayerMood(gameState);
+  const energy = getPlayerEnergy(gameState);
+  const song = getPlayerSong(gameState);
+  const nerves = getPlayerNervousness(gameState);
+  const wish = getPlayerWish(gameState);
 
   // Calcular Stats RPG
   let aventura = 0;
@@ -71,32 +98,50 @@ const Victory = ({ gameState, onRestart }: Props) => {
     return '⭐';
   };
 
-  const whatsappText = `✨ Misión Aceptada ✨
+  const whatsappText = `✨ ${dynamicTitle} ✨
 
 Avatar: ${avatar?.name}
-Equipo/Acompañante: ${inventory?.name}
-Clima previsto: ${weather?.name}
+Destino: ${dest?.dest}
+Día: ${day?.name} a las ${gameState.time}
 Outfit: ${dressCode?.name || 'Cualquiera'}
 Transporte: ${transport?.name}
-Día: ${day?.name} a las ${gameState.time}
-Misión Principal: ${dest?.dest}
-Desvío Opcional: ${sideQuest?.name || 'Ninguno'}
+Clima previsto: ${weather?.name}
 Combustible: ${fuel ? fuel.name : 'Incluido en el destino'}
+Desvío Opcional: ${sideQuest?.name || 'Ninguno'}
 
-💬 Sus respuestas:
-${gameState.responses.mood ? `• Mood: "${gameState.responses.mood}"` : ''}
-${gameState.responses.plan_vibe ? `• Energía: ${gameState.responses.plan_vibe}` : ''}
-${gameState.responses.song ? `• Canción: "${gameState.responses.song}"` : ''}
-${gameState.responses.nervous ? `• ¿Nerviosa?: ${gameState.responses.nervous}` : ''}
-${gameState.responses.wish ? `• Deseo especial: "${gameState.responses.wish}"` : ''}
+🎵 Banda sonora oficial:
+${song || 'N/A'}
+
+🎯 Misión secundaria:
+${wish || 'N/A'}
+
+⚡ Energía detectada:
+${energy || 'N/A'}
+
+💭 Mood actual:
+${mood || 'N/A'}
+
+🦋 Nervios: ${nerves || 'N/A'}
 
 🛡️ Probabilidad de Éxito: ${successRate}%
-🎵 Reto Especial: "Te enviaré un audio cantando el opening de Corazón Encantado para confirmar esta misión."
+🌟 Reto Especial: "${challenge}"
 
 ⭐ ¡P1 READY!
 ¿Qué tal el plan? 🚀`;
 
-  const whatsappLink = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(whatsappText)}`;
+  // Uso de deeplink nativo (whatsapp://) para intentar forzar la apertura en móviles
+  const whatsappLink = `whatsapp://send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(whatsappText)}`;
+  // Fallback a api.whatsapp.com para desktop
+  const whatsappFallback = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodeURIComponent(whatsappText)}`;
+
+  const handleWhatsAppClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // Intenta abrir el deeplink nativo, si falla en 500ms, abre el fallback en nueva pestaña
+    window.location.href = whatsappLink;
+    setTimeout(() => {
+      window.open(whatsappFallback, '_blank');
+    }, 500);
+  };
 
   if (showEasterEgg) {
     // Stop background music
@@ -144,16 +189,19 @@ ${gameState.responses.wish ? `• Deseo especial: "${gameState.responses.wish}"`
         title="?"
       />
 
-      <h1 style={{ color: 'var(--success)', fontSize: '2rem', animation: 'float 2s infinite, pulse 2s infinite' }}>CITA DESBLOQUEADA</h1>
+      <h1 style={{ color: 'var(--success)', fontSize: '1.2rem', animation: 'float 2s infinite, pulse 2s infinite' }}>{dynamicTitle}</h1>
       
-      <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
-        <Typewriter text="¡Nivel completado! Tu progreso ha sido guardado. Pero antes de terminar..." speed={30} />
+      <div className="mb-3 mt-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '15px', borderRadius: '5px', borderLeft: '3px solid var(--success)' }}>
+        <Typewriter text="¡Nivel completado! Tu progreso ha sido guardado. Gracias por llegar hasta aquí. Esta aventura fue construida especialmente para ti." speed={30} />
       </div>
 
       <div className="rpg-card mt-3 mb-3" style={{ background: 'rgba(255, 107, 107, 0.2)', borderColor: '#ff6b6b', padding: '15px' }}>
         <h3 style={{ color: '#ff6b6b', fontSize: '1rem', marginBottom: '10px' }}>🎤 MISIÓN FINAL 🎤</h3>
         <p className="text-pixel" style={{ fontSize: '0.75rem', lineHeight: '1.5' }}>
-          Para validar este plan, debes enviarle a tu Player 2 un mensaje de voz por WhatsApp cantando el opening de <strong>Dragon Ball GT (Mi Corazón Encantado)</strong> junto con la confirmación. ¡Es obligatorio para poder avanzar!
+          Para validar este plan, debes enviarle a tu Player 2 un mensaje por WhatsApp cumpliendo este reto: <br/><br/>
+          <strong style={{ color: '#ffd43b' }}>{challenge}</strong>
+          <br/><br/>
+          ¡Es obligatorio para poder avanzar!
         </p>
       </div>
 
@@ -174,53 +222,53 @@ ${gameState.responses.wish ? `• Deseo especial: "${gameState.responses.wish}"`
         </div>
       </div>
 
-      {Object.keys(gameState.responses).length > 0 && (
-        <div className="rpg-card text-left mt-3 mb-3" style={{ background: 'rgba(232, 121, 249, 0.1)', padding: '15px', borderColor: '#e879f9' }}>
-          <h3 style={{ color: '#e879f9', fontSize: '0.8rem', borderBottom: '1px dashed #e879f966', paddingBottom: '10px', marginBottom: '10px' }}>💬 Lo que ella dijo</h3>
-          
-          {gameState.responses.mood && (
-            <div className="mb-2">
-              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Su mood:</span>
-              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>"{gameState.responses.mood}"</p>
-            </div>
-          )}
-          {gameState.responses.plan_vibe && (
-            <div className="mb-2">
-              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Energía que quiere:</span>
-              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>{gameState.responses.plan_vibe}</p>
-            </div>
-          )}
-          {gameState.responses.song && (
-            <div className="mb-2">
-              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Canción que la describe:</span>
-              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>🎵 "{gameState.responses.song}"</p>
-            </div>
-          )}
-          {gameState.responses.nervous && (
-            <div className="mb-2">
-              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>¿Nerviosa?:</span>
-              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>{gameState.responses.nervous}</p>
-            </div>
-          )}
-          {gameState.responses.wish && (
-            <div className="mb-2">
-              <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Deseo especial:</span>
-              <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>🌟 "{gameState.responses.wish}"</p>
-            </div>
-          )}
+      <div className="rpg-card text-left mt-3 mb-3" style={{ background: 'rgba(232, 121, 249, 0.1)', padding: '15px', borderColor: '#e879f9' }}>
+        <h3 style={{ color: '#e879f9', fontSize: '0.8rem', borderBottom: '1px dashed #e879f966', paddingBottom: '10px', marginBottom: '10px' }}>💬 Resumen de Personalidad</h3>
+        
+        <div className="mb-2">
+          <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Avatar:</span>
+          <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>{avatar?.name}</p>
         </div>
-      )}
+        {mood && (
+          <div className="mb-2">
+            <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Su mood:</span>
+            <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>"{mood}"</p>
+          </div>
+        )}
+        {energy && (
+          <div className="mb-2">
+            <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Energía que quiere:</span>
+            <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>{energy}</p>
+          </div>
+        )}
+        {song && (
+          <div className="mb-2">
+            <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Banda sonora oficial:</span>
+            <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>🎵 "{song}"</p>
+          </div>
+        )}
+        {nerves && (
+          <div className="mb-2">
+            <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>¿Nerviosa?:</span>
+            <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>{nerves}</p>
+          </div>
+        )}
+        {wish && (
+          <div className="mb-2">
+            <span className="text-pixel" style={{ fontSize: '0.55rem', color: '#94a3b8' }}>Deseo especial:</span>
+            <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: '2px 0 0 0' }}>🌟 "{wish}"</p>
+          </div>
+        )}
+      </div>
 
       <div className="flex-center mt-3 mb-3">
-        <a 
-          href={whatsappLink} 
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <button 
+          onClick={handleWhatsAppClick}
           className="btn-retro"
-          style={{ padding: '15px 30px', fontSize: '1.2rem', textDecoration: 'none' }}
+          style={{ padding: '15px 30px', fontSize: '1.2rem' }}
         >
           Enviar Confirmación a WhatsApp
-        </a>
+        </button>
       </div>
 
       <div className="flex-center mt-3">

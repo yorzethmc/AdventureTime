@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { weatherOptions, avatarOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
+import Toast from '../components/Toast';
 
 interface Props {
   onNext: () => void;
@@ -10,13 +12,41 @@ interface Props {
 }
 
 const Weather = ({ onNext, gameState, updateState }: Props) => {
+  const [toastMsg, setToastMsg] = useState('');
+  const [showToast, setShowToast] = useState(false);
+
+  const getReaction = (weatherId: string, avatarId: string | null) => {
+    if (weatherId === 'rainy') {
+      if (avatarId === 'vampire') return '🦇 Lluvia... perfecto para mis dominios.';
+      if (avatarId === 'healer_glam') return '💅 ¡Oh no, mi pelo!';
+      return '🌧️ Perfecto para historias memorables.';
+    }
+    if (weatherId === 'sunny') {
+      if (avatarId === 'vampire') return '🦇 Odio el sol. Llevaremos bloqueador SPF 1000.';
+      if (avatarId === 'princess_random') return '👑 Sol... excelente para el bronceado real.';
+      return '☀️ Nivel de vitamina D incrementado.';
+    }
+    if (weatherId === 'cloudy') {
+      if (avatarId === 'necromancer_goth') return '💀 Sombras... mi clima ideal.';
+      return '☁️ Misterio detectado.';
+    }
+    return '';
+  };
+
   const handleSelect = (id: string) => {
     updateState('weatherId', id);
     sfxSelect();
+    
+    const reaction = getReaction(id, gameState.avatarId);
+    if (reaction) {
+      setToastMsg(reaction);
+      setShowToast(true);
+    }
   };
 
   const handleNext = () => {
     if (gameState.weatherId) {
+      setShowToast(false);
       sfxClick();
       onNext();
     }
@@ -58,6 +88,8 @@ const Weather = ({ onNext, gameState, updateState }: Props) => {
           Confirmar Clima
         </button>
       </div>
+
+      <Toast message={toastMsg} show={showToast} onHide={() => setShowToast(false)} />
     </div>
   );
 };

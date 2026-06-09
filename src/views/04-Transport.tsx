@@ -2,6 +2,7 @@ import { transportOptions, calculateRemainingGold, avatarOptions } from '../data
 import type { GameState } from '../App';
 import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
+import Toast from '../components/Toast';
 
 import { useState } from 'react';
 
@@ -14,6 +15,24 @@ interface Props {
 const Transport = ({ onNext, gameState, updateState }: Props) => {
   const currentGold = calculateRemainingGold(null, gameState.destId, gameState.fuelId, gameState.haggleDiscount);
   const [hasHaggled, setHasHaggled] = useState(gameState.haggleDiscount !== 0);
+  const [toastMsg, setToastMsg] = useState('');
+  const [showToast, setShowToast] = useState(false);
+
+  const getReaction = (transportId: string, avatarId: string | null) => {
+    if (transportId === 'moto') {
+      if (avatarId === 'warrior') return '⚔️ Montura de acero. Excelente.';
+      return '🏍️ Modo protagonista desbloqueado.';
+    }
+    if (transportId === 'chancha') {
+      if (avatarId === 'bard') return '🎸 El pueblo viaja en bus, y el bardo con ellos.';
+      return '🚌 Ruta legendaria iniciada.';
+    }
+    if (transportId === 'uber') {
+      if (avatarId === 'princess_random') return '👑 Por supuesto, la realeza no camina.';
+      return '🚗 Viaje premium activado.';
+    }
+    return '';
+  };
 
   const handleHaggle = () => {
     sfxSelect();
@@ -33,10 +52,17 @@ const Transport = ({ onNext, gameState, updateState }: Props) => {
     }
     updateState('transportId', id);
     sfxSelect();
+
+    const reaction = getReaction(id, gameState.avatarId);
+    if (reaction) {
+      setToastMsg(reaction);
+      setShowToast(true);
+    }
   };
 
   const handleNext = () => {
     if (gameState.transportId) {
+      setShowToast(false);
       sfxClick();
       onNext();
     }
@@ -103,6 +129,8 @@ const Transport = ({ onNext, gameState, updateState }: Props) => {
           Confirmar
         </button>
       </div>
+
+      <Toast message={toastMsg} show={showToast} onHide={() => setShowToast(false)} />
     </div>
   );
 };

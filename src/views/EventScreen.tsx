@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import type { GameState } from '../App';
 import Typewriter from '../components/Typewriter';
+import { getPlayerEnergy, getPlayerSong, isEnergyAdrenaline, isEnergyRomantic, isNervousHigh } from '../utils/memory';
 
 interface Props {
   eventId: string;
@@ -22,120 +23,28 @@ const getAvatarName = (id: string | null): string => {
 };
 
 const eventData: Record<string, any> = {
-  merchant: {
-    name: 'Don Cornelio — Mercader de Caminos',
-    image: 'events/merchant.png',
-    emoji: '🧳',
-    borderColor: '#f59f00',
-    getText: (state: GameState) => {
-      const name = getAvatarName(state.avatarId);
-      return `"¡Ah, pero si es ${name}! Llevo 40 años recorriendo estos senderos y jamás he visto a alguien con tanta determinación en la mirada. Tengo algo especial en mi carreta... un paquete de Snacks Legendarios traídos desde tierras lejanas. Solo 10 monedas de oro. ¿Qué dice, aventurero?"`;
-    },
-    options: [
-      {
-        text: '💰 Comprar Snacks Legendarios (-10 Oro)',
-        action: (update: any) => {
-          update('inventoryId', 'snacks');
-          update('haggleDiscount', -10);
-        },
-        sfx: 'select',
-        getResult: () => '"¡Sabia elección!" Don Cornelio envuelve los snacks en un pañuelo bordado. "Si la cita sale mal, al menos tendrán algo rico que compartir en el silencio incómodo." Te guiña un ojo y empuja su carreta colina abajo.'
-      },
-      {
-        text: '🤝 Regatear como profesional',
-        action: (update: any, state: GameState) => {
-          if (state.avatarId === 'gemini' || state.avatarId === 'bard' || state.avatarId === 'princess_random') {
-            update('inventoryId', 'snacks');
-            update('haggleDiscount', -3);
-          } else {
-            update('haggleDiscount', -10);
-          }
-        },
-        sfx: 'select',
-        getResult: (state: GameState) => {
-          if (state.avatarId === 'gemini' || state.avatarId === 'bard' || state.avatarId === 'princess_random') {
-            return '"¡Pero qué labia! Me recuerdas a mi difunta esposa." Don Cornelio suspira nostálgico y te da los snacks por solo 3 monedas. "Llévalos, y que el amor les sonría."';
-          }
-          return 'Don Cornelio se ríe a carcajadas. "¿Regatear conmigo? Llevo 40 años en esto." Te cobra el precio completo pero te regala un consejo: "El mejor plan es el que no se planea demasiado."';
-        }
-      },
-      {
-        text: '👋 Declinar con respeto',
-        action: () => {},
-        sfx: 'click',
-        getResult: () => 'Don Cornelio asiente con dignidad. "Entiendo. El verdadero tesoro no se compra con oro de todas formas." Se ajusta el sombrero y desaparece por el sendero, tarareando una vieja melodía.'
-      }
-    ]
-  },
-
-  slime: {
-    name: 'Gomita — El Slime Ancestral',
-    image: 'events/slime.png',
-    emoji: '👾',
-    borderColor: '#4c6ef5',
-    getText: (state: GameState) => {
-      const name = getAvatarName(state.avatarId);
-      return `Un enorme slime azul gelatinoso emerge del suelo bloqueando completamente el camino. Tiene dibujada una carita feliz que... ¿se está moviendo? El slime hace un ruido que suena sospechosamente a "¿quién va?". ${name} se detiene en seco.`;
-    },
-    options: [
-      {
-        text: '⚔️ ¡A la batalla!',
-        action: (update: any, state: GameState) => {
-          if (state.avatarId === 'warrior' || state.avatarId === 'mage' || state.avatarId === 'hunter_athletic') {
-            update('haggleDiscount', 15);
-          } else if (state.avatarId === 'necromancer_goth') {
-            update('haggleDiscount', 20);
-          } else {
-            update('haggleDiscount', -5);
-          }
-        },
-        sfx: 'select',
-        getResult: (state: GameState) => {
-          if (state.avatarId === 'warrior' || state.avatarId === 'mage' || state.avatarId === 'hunter_athletic') {
-            return '¡CRITICAL HIT! Tu entrenamiento de combate dio frutos. Gomita explota en confeti azul y deja caer 15 monedas de oro. Detrás de los restos encuentras un cartel que dice: "Este slime fue patrocinado por el Gremio de Aventureros."';
-          }
-          if (state.avatarId === 'necromancer_goth') {
-            return 'Invocas las sombras y Gomita se disuelve aterrorizado. En su lugar queda un charco brillante con 20 monedas. Sonríes satisfecha. "Demasiado fácil."';
-          }
-          return 'La batalla fue... complicada. Gomita te lanzó baba pegajosa y perdiste 5 monedas de oro intentando limpiarte. Pero al menos el camino está libre y tienes una historia que contar.';
-        }
-      },
-      {
-        text: '🍫 Ofrecerle un snack',
-        action: (update: any, state: GameState) => {
-          if (state.inventoryId === 'snacks') {
-            update('haggleDiscount', 10);
-          }
-        },
-        sfx: 'select',
-        getResult: (state: GameState) => {
-          if (state.inventoryId === 'snacks') {
-            return '¡Gomita devora el snack y vibra de felicidad! Se hace a un lado y regurgita... ¿10 monedas de oro? Asqueroso pero útil. Te despide con un "BLOOP" amistoso.';
-          }
-          return 'Buscas en tu mochila pero no tienes snacks. Gomita te mira decepcionado con su carita triste. Finalmente se aburre y se arrastra fuera del camino, dejando un rastro baboso.';
-        }
-      },
-      {
-        text: '🏃 ¡Huir corriendo!',
-        action: () => {},
-        sfx: 'buzz',
-        getResult: () => 'Sales corriendo gritando "¡NOPE NOPE NOPE!" mientras Gomita te persigue en cámara lenta. Afortunadamente los slimes no son muy rápidos. Escapas con tu dignidad parcialmente intacta.'
-      }
-    ]
-  },
-
-  thief: {
-    name: 'Sombra — La Pícara del Mercado',
+  robin_hood: {
+    name: 'Robin Hood — El Forajido',
     image: 'events/thief.png',
-    emoji: '🗡️',
+    emoji: '🏹',
     borderColor: '#a855f7',
     getText: (state: GameState) => {
       const name = getAvatarName(state.avatarId);
-      return `Una figura encapuchada cae del tejado más cercano, aterriza con una pirueta perfecta y hace una reverencia teatral. "Buenas noches, ${name}. Mi nombre es Sombra, y normalmente me llevo lo que quiero. Pero hoy me siento generosa... o quizás te doy la oportunidad de conservar tu oro. Depende de ti."`;
+      let contextLine = `"Buenas noches, ${name}. Normalmente le robo a los ricos para darmelo a mí mismo..."`;
+      
+      if (state.weatherId === 'rainy') {
+        contextLine = `"Perfecto. La lluvia borra las huellas. Buenas noches, ${name}..."`;
+      } else if (state.dressId === 'elegant') {
+        contextLine = `"Con esa ropa pareces alguien con dinero, ${name}..."`;
+      } else if (isEnergyAdrenaline(state)) {
+        contextLine = `"Alguien busca adrenalina esta noche. Me gusta tu actitud, ${name}..."`;
+      }
+
+      return `${contextLine} Se ríe entre dientes. "Pero hoy me siento generoso. ¿Cómo resolvemos esto?"`;
     },
     options: [
       {
-        text: '💬 Usar la labia para convencerla',
+        text: '💬 Usar la labia para convencerlo',
         action: (update: any, state: GameState) => {
           if (state.avatarId === 'gemini' || state.avatarId === 'bard' || state.avatarId === 'healer_glam') {
             update('haggleDiscount', 12);
@@ -146,9 +55,9 @@ const eventData: Record<string, any> = {
         sfx: 'select',
         getResult: (state: GameState) => {
           if (state.avatarId === 'gemini' || state.avatarId === 'bard' || state.avatarId === 'healer_glam') {
-            return 'Sombra se detiene a mitad de robo, fascinada por tu conversación. "Eres... interesante. Toma, te regalo estas monedas que le robé a otro viajero. Él no las merecía tanto como tú." (+12 Oro). Desaparece en el humo con un guiño.';
+            return 'Robin Hood se detiene, fascinado. "Eres... interesante. Toma, te regalo estas monedas que le robé a otro viajero." (+12 Oro). Desaparece en el bosque.';
           }
-          return 'Sombra escucha tu discurso, bosteza, y mientras estabas distraído hablando, ya te robó 8 monedas. "Bonito intento. Trabaja en tu poker face." Desaparece entre las sombras riendo.';
+          return 'Robin escucha tu discurso, bosteza, y mientras estabas distraído, ya te robó 8 monedas. "Bonito intento." Desaparece riendo.';
         }
       },
       {
@@ -163,86 +72,163 @@ const eventData: Record<string, any> = {
         sfx: 'select',
         getResult: (state: GameState) => {
           if (state.avatarId === 'warrior' || state.avatarId === 'hunter_athletic' || state.avatarId === 'explorer') {
-            return 'Sombra evalúa tu postura de combate y silba impresionada. "Mmm, no merece la pena el riesgo. Respeto a quien sabe defenderse." Lanza 5 monedas al aire como propina y se esfuma entre las sombras.';
+            return 'Robin evalúa tu postura de combate y silba impresionado. "Mmm, no merece la pena el riesgo." Lanza 5 monedas al aire como propina y se esfuma.';
           }
-          return 'Adoptas una pose de kung fu que claramente aprendiste de una película. Sombra se ríe tanto que casi se cae del muro. Te roba 5 monedas "por el show". Ouch.';
+          return 'Adoptas una pose extraña. Robin se ríe a carcajadas. Te roba 5 monedas "por el show".';
         }
-      },
-      {
-        text: '💰 Soltar las monedas y salir corriendo',
-        action: (update: any) => update('haggleDiscount', -5),
-        sfx: 'buzz',
-        getResult: () => 'Dejas caer 5 monedas y escapas a toda velocidad. Sombra recoge el oro y grita: "¡Vuelve pronto, fue un placer hacer negocios!" Al menos estás vivo.'
       }
     ]
   },
 
-  fortune_teller: {
-    name: 'Madame Lunara — Oráculo Errante',
+  nostradamus: {
+    name: 'Nostradamus — Oráculo del Tiempo',
     image: 'events/fortune_teller.png',
     emoji: '🔮',
     borderColor: '#c084fc',
     getText: (state: GameState) => {
       const name = getAvatarName(state.avatarId);
-      return `Una carpa morada aparece de la nada en medio del camino. De su interior sale humo con olor a incienso y una voz susurra: "Entra, ${name}... Las estrellas me dijeron que vendrías. Tu futuro romántico pende de un hilo, y yo tengo las tijeras. ¿Quieres saber qué depara el destino para esta cita?"`;
+      const song = getPlayerSong(state);
+      
+      let contextLine = `"Las estrellas me hablaron de ti, ${name}..."`;
+      
+      if (isEnergyRomantic(state)) {
+        contextLine = `"Las estrellas detectan una fuerte energía romántica a tu alrededor, ${name}..."`;
+      } else if (isNervousHigh(state)) {
+        contextLine = `"Veo dudas en tu futuro cercano, ${name}. Los nervios te traicionan..."`;
+      } else if (song) {
+        contextLine = `"Las estrellas tararean algo parecido a '${song}'... El universo tiene buen gusto musical, ${name}."`;
+      }
+
+      return `Una figura encapuchada surge de la niebla. ${contextLine} "Tengo una profecía para tu cita. ¿Te atreves a escuchar?"`;
     },
     options: [
       {
-        text: '🔮 Pedir la lectura completa (-5 Oro)',
-        action: (update: any) => update('haggleDiscount', -5),
+        text: '🔮 Escuchar la profecía',
+        action: () => {},
         sfx: 'select',
-        getResult: () => {
-          const fortunes = [
-            '"Veo... un momento incómodo con el mesero. Pedirán lo mismo y ambos dirán \'yo vi primero eso\'. Pero todo saldrá bien al final."',
-            '"Las cartas dicen que habrá una risa tan fuerte que todo el restaurante los mirará. Esto es bueno. Muy bueno."',
-            '"Cuidado con el tercer tema de conversación... será polémico. Pero si sobreviven eso, nada los detendrá."',
-            '"Veo comida cayendo de un plato. No preguntes de quién. Solo lleva servilletas extra."'
-          ];
-          return `Madame Lunara cierra los ojos, sus manos brillan sobre la bola de cristal.\n\n${fortunes[Math.floor(Math.random() * fortunes.length)]}\n\nLa carpa se desvanece en humo morado. Solo queda el olor a incienso.`;
+        getResult: (state: GameState) => {
+          if (isEnergyRomantic(state)) {
+             return '"Veo miradas cruzadas... sonrisas discretas... y un momento donde el tiempo se detendrá." Nostradamus desaparece dejándote pensativa.';
+          }
+          return '"Veo... un momento incómodo con el mesero. Pedirán lo mismo y ambos dirán \'yo vi primero eso\'. Pero todo saldrá bien al final."';
         }
       },
       {
-        text: '🃏 Pedir solo una carta gratis',
-        action: () => {},
-        sfx: 'select',
-        getResult: () => 'Madame Lunara voltea una carta del tarot: El Loco. "Interesante... significa nuevos comienzos, aventura sin miedo. Tu cita será exactamente eso." Sonríe enigmáticamente y cierra la cortina de la carpa.'
-      },
-      {
-        text: '🚶 Pasar de largo',
+        text: '🚶 Ignorar el destino',
         action: () => {},
         sfx: 'click',
-        getResult: () => '"¡Ignorar al destino tiene consecuencias!" grita Lunara desde la carpa. Pero luego añade en voz baja: "...que generalmente son ninguna. Buen viaje." La carpa se desvanece como si nunca hubiera estado ahí.'
+        getResult: () => '"¡El destino te alcanzará de todas formas!" grita Nostradamus mientras se desvanece en la niebla.'
       }
     ]
   },
 
-  knight: {
-    name: 'Sir Gastón — Caballero Sin Rumbo',
-    image: 'events/knight.png',
-    emoji: '🛡️',
-    borderColor: '#60a5fa',
+  hachiko: {
+    name: 'Hachiko — El Perrito Leal',
+    image: 'events/slime.png',
+    emoji: '🐕',
+    borderColor: '#f59f00',
     getText: (state: GameState) => {
       const name = getAvatarName(state.avatarId);
-      return `Un caballero con armadura reluciente pero un casco puesto al revés tropieza frente a ti. Se levanta con dificultad, se quita el casco revelando un bigote magnífico, y te mira con ojos esperanzados. "¡${name}! Gracias al cielo. Llevo 3 horas dando vueltas. ¿Dónde diablos queda el castillo del Rey? Mi GPS (Gran Pergamino Señalizador) se mojó con la lluvia."`;
+      const mood = state.responses.mood || '';
+      
+      let contextLine = `Un perrito Akita Inu bloquea el camino. Te mira con ojitos tiernos.`;
+      
+      if (isNervousHigh(state)) {
+        contextLine = `El perrito te mira, inclina la cabeza y hace un sonido que parece decir: "No te preocupes. Todo saldrá bien, ${name}."`;
+      } else if (mood.includes('😊') || mood.includes('feliz') || mood.includes('feliz')) {
+        contextLine = `El perrito mueve la cola frenéticamente. "Mueves la cola igual que yo," parece decirte telepáticamente.`;
+      }
+
+      return `${contextLine} Está esperando algo de ti.`;
     },
     options: [
       {
-        text: '🗺️ Ayudarle a leer el mapa',
+        text: '🍫 Ofrecerle un snack',
+        action: (update: any, state: GameState) => {
+          if (state.inventoryId === 'snacks') {
+            update('haggleDiscount', 10);
+          }
+        },
+        sfx: 'select',
+        getResult: (state: GameState) => {
+          if (state.inventoryId === 'snacks') {
+            return '¡Hachiko devora el snack y vibra de felicidad! Rasca la tierra y desentierra... ¿10 monedas de oro? Buen chico.';
+          }
+          return 'Buscas en tu mochila pero no tienes snacks. Hachiko te mira decepcionado. Finalmente se aburre y se acuesta a esperar a alguien más.';
+        }
+      },
+      {
+        text: '👋 Acariciarlo',
+        action: () => {},
+        sfx: 'select',
+        getResult: () => 'Le das unas palmaditas. Hachiko cierra los ojos contento. Te sientes llena de determinación y energía positiva para tu cita.'
+      }
+    ]
+  },
+
+  juana_arco: {
+    name: 'Juana de Arco — La Guerrera Santa',
+    image: 'events/knight.png',
+    emoji: '⚔️',
+    borderColor: '#60a5fa',
+    getText: (state: GameState) => {
+      const name = getAvatarName(state.avatarId);
+      
+      let contextLine = `"¡Detente, ${name}! El camino por delante requiere valor."`;
+      
+      if (state.destId === 'poas') {
+        contextLine = `"¡Volcán Poás! Excelente elección estratégica, ${name}. Terreno elevado."`;
+      } else if (state.dressId === 'adventurer') {
+        contextLine = `"Veo que has venido preparada para la misión. Buena armadura."`;
+      }
+
+      return `Una guerrera en armadura brillante te corta el paso. ${contextLine} "Mi brújula divina se ha roto. ¿Hacia dónde queda el destino?"`;
+    },
+    options: [
+      {
+        text: '🗺️ Ayudarle con el mapa',
         action: (update: any) => update('haggleDiscount', 20),
         sfx: 'select',
-        getResult: () => 'Le das vuelta al mapa (lo tenía al revés todo el rato). Sir Gastón se sonroja debajo del bigote. "Ah... eso explica mucho." Te da 20 monedas de oro y un sermón sobre el honor y la caballerosidad que no pediste pero que en el fondo disfrutas. "¡Que el viento guíe tu cita, noble aventurero!"'
+        getResult: () => 'Le explicas las direcciones. Juana asiente con firmeza. "Gracias, guerrera." Te da 20 monedas de oro de las arcas reales. "¡Que la victoria sea tuya en esta cita!"'
       },
       {
-        text: '🧭 Darle indicaciones inventadas',
-        action: (update: any) => update('haggleDiscount', 5),
-        sfx: 'select',
-        getResult: () => 'Le señalas una dirección random con absoluta confianza. Sir Gastón te da 5 monedas por la ayuda y marcha decidido... hacia la panadería del barrio. En algún lugar, un panadero está a punto de tener un día muy confuso.'
-      },
-      {
-        text: '😅 Confesar que tú también estás perdido',
+        text: '😅 Confesar que tú también estás perdida',
         action: () => {},
         sfx: 'click',
-        getResult: () => 'Sir Gastón te abraza con la fuerza de alguien que lleva armadura de 30 kilos. "¡Al fin alguien honesto! La mayoría me manda para cualquier lado." Se van juntos un rato hasta que él reconoce un arbusto ("¡este lo he visto 7 veces!") y se despide con un saludo militar.'
+        getResult: () => 'Juana suspira. "Supongo que ambas debemos forjar nuestro propio camino." Hace una reverencia y se marcha con paso marcial.'
+      }
+    ]
+  },
+
+  gato_mercader: {
+    name: 'Gato Mercader',
+    image: 'events/merchant.png',
+    emoji: '🐱',
+    borderColor: '#ffca28',
+    getText: (state: GameState) => {
+      const name = getAvatarName(state.avatarId);
+      let contextLine = `"Miauu... Tengo mercancía si tienes oro, ${name}..."`;
+
+      if (state.inventoryId === 'camera') {
+        contextLine = `"Veo que te gusta coleccionar recuerdos. Te cambio una historia por unas fotos..."`;
+      } else if (state.time && state.time.startsWith('2')) {
+        contextLine = `"A los gatos nos encanta negociar de noche, ¿verdad ${name}?"`;
+      }
+
+      return `Un gato enorme con un sombrero de copa y una maleta aparece de la nada. ${contextLine}`;
+    },
+    options: [
+      {
+        text: '🐟 Invitarle a pescar (o darle de comer)',
+        action: (update: any) => update('haggleDiscount', 15),
+        sfx: 'select',
+        getResult: () => 'El gato ronronea. "¡Un humano con cultura!" Se quita el sombrero de donde caen 15 monedas de oro. "Un trato justo." Desaparece en las sombras.'
+      },
+      {
+        text: '🗣️ Intentar regatearle unos items',
+        action: (update: any) => update('haggleDiscount', -10),
+        sfx: 'click',
+        getResult: () => 'El gato te mira con desdén. "Nadie estafa a Michi el Mercader." Usa sus garras para robarte 10 monedas antes de que puedas reaccionar.'
       }
     ]
   }
@@ -250,10 +236,10 @@ const eventData: Record<string, any> = {
 
 // Pool de eventos por punto de interrupción
 const eventPools: Record<string, string[]> = {
-  after_inventory: ['knight', 'merchant'],
-  after_transport: ['merchant', 'fortune_teller'],
-  after_destinations: ['slime', 'thief'],
-  after_fuel: ['fortune_teller', 'knight']
+  after_inventory: ['juana_arco', 'hachiko', 'gato_mercader'],
+  after_transport: ['robin_hood', 'nostradamus', 'gato_mercader'],
+  after_destinations: ['hachiko', 'robin_hood', 'gato_mercader'],
+  after_fuel: ['nostradamus', 'juana_arco', 'gato_mercader']
 };
 
 export const rollForEvent = (trigger: string): string | null => {

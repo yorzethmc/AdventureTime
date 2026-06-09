@@ -3,6 +3,7 @@ import { sfxClick } from '../utils/audio';
 import { dressCodeOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import Typewriter from '../components/Typewriter';
+import Toast from '../components/Toast';
 
 interface Props {
   onNext: () => void;
@@ -12,13 +13,42 @@ interface Props {
 
 const DressCode = ({ onNext, gameState, updateState }: Props) => {
   const [showButton, setShowButton] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
+  const [showToast, setShowToast] = useState(false);
+
+  const getReaction = (dressId: string, avatarId: string | null) => {
+    if (dressId === 'elegant') {
+      if (avatarId === 'vampire') return '🦇 Vestida para cazar... corazones.';
+      return '👗 Preparando apariencia de alto impacto.';
+    }
+    if (dressId === 'adventurer') {
+      if (avatarId === 'warrior') return '⚔️ Armadura ligera equipada.';
+      return '🧗‍♀️ Equipo de expedición confirmado.';
+    }
+    if (dressId === 'casual') {
+      if (avatarId === 'bard') return '🎸 Estilo relajado. Perfecto para tocar unas notas.';
+      return '👟 Comodidad al máximo para la misión.';
+    }
+    if (dressId === 'streetwear') {
+      if (avatarId === 'necromancer_goth') return '💀 Estilo urbano... pero oscuro.';
+      return '🛹 Estilo urbano activado.';
+    }
+    return '';
+  };
 
   const handleSelect = (id: string) => {
     sfxClick();
     updateState('dressId', id);
+
+    const reaction = getReaction(id, gameState.avatarId);
+    if (reaction) {
+      setToastMsg(reaction);
+      setShowToast(true);
+    }
   };
 
   const handleNext = () => {
+    setShowToast(false);
     sfxClick();
     onNext();
   };
@@ -58,6 +88,8 @@ const DressCode = ({ onNext, gameState, updateState }: Props) => {
           </button>
         )}
       </div>
+
+      <Toast message={toastMsg} show={showToast} onHide={() => setShowToast(false)} />
     </div>
   );
 };

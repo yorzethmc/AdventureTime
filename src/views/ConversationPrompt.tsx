@@ -16,9 +16,14 @@ export const conversationQuestions: ConversationQuestion[] = [
   {
     id: 'mood',
     emoji: '💭',
-    question: '¿Cómo te sentís hoy? Describí tu mood en una frase.',
-    type: 'text',
-    placeholder: 'Ej: Con ganas de aventura...'
+    question: '¿Cómo te sentís hoy? (Elegí la que más te represente)',
+    type: 'choice',
+    choices: [
+      { label: 'Con ganas de salir y hacer algo nuevo', emoji: '🌟' },
+      { label: 'Un poco cansada, pero me animo a un plan', emoji: '🔋' },
+      { label: 'Modo súper chill y cafecito', emoji: '☕' },
+      { label: '¡A tope de energía, vamos con todo!', emoji: '🚀' }
+    ]
   },
   {
     id: 'plan_vibe',
@@ -35,9 +40,9 @@ export const conversationQuestions: ConversationQuestion[] = [
   {
     id: 'song',
     emoji: '🎵',
-    question: '¿Qué canción te describe en este momento?',
+    question: 'Compartime la canción que más has disfrutado últimamente y contame por qué te gusta tanto.',
     type: 'text',
-    placeholder: 'Ej: Corazón Encantado 😉'
+    placeholder: 'Ej: "Corazón Encantado" porque me recuerda a mi infancia...'
   },
   {
     id: 'nervous',

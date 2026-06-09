@@ -1,8 +1,9 @@
-import { avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions, inventoryOptions, weatherOptions, sideQuestOptions } from '../data/gameData';
+import { avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions, inventoryOptions, weatherOptions, sideQuestOptions, getTimePeriod } from '../data/gameData';
 import { useState, useEffect } from 'react';
 import type { GameState } from '../App';
 import { sfxClick } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
+import { getPlayerNervousness, getPlayerEnergy, getPlayerWish, isNervousHigh, isEnergyRomantic, isEnergyAdrenaline } from '../utils/memory';
 
 interface Props {
   onConfirm: () => void;
@@ -23,6 +24,22 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
   const sideQuest = sideQuestOptions.find(s => s.id === gameState.sideQuestId);
   const fuel = fuelOptions.find(f => f.id === gameState.fuelId);
 
+  // Evaluar sinergias
+  const timePeriod = getTimePeriod(gameState.time || '');
+  let synergyEvent = '';
+  
+  if (gameState.avatarId === 'vampire' && gameState.weatherId === 'rainy' && (timePeriod === 'evening' || timePeriod === 'night')) {
+    synergyEvent = 'Noche Perfecta para una Vampiresa';
+  } else if (gameState.avatarId === 'warrior' && gameState.dressId === 'adventurer' && gameState.destId === 'poas') {
+    synergyEvent = 'Preparación táctica perfecta';
+  } else if (gameState.avatarId === 'mage' && (timePeriod === 'evening' || timePeriod === 'night')) {
+    synergyEvent = 'Convergencia Arcana';
+  } else if (gameState.avatarId === 'gemini' && (gameState.destId === 'cafe_chill' || gameState.destId === 'gemini_twin_cafe')) {
+    synergyEvent = 'Debate Existencial Interdimensional';
+  }
+
+  const wish = getPlayerWish(gameState);
+
   useEffect(() => {
     // Simulate calculating success rate
     const timer = setTimeout(() => {
@@ -34,7 +51,7 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
       }
       setSuccessRate(rate);
       setCalculating(false);
-    }, 3500);
+    }, 4500); // Un poco más de tiempo para leer los análisis emocionales
     return () => clearTimeout(timer);
   }, [gameState]);
 
@@ -55,6 +72,12 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
       <div className="mb-3 text-pixel" style={{ color: '#e2e8f0', lineHeight: '1.6', fontSize: '0.7rem', background: 'rgba(0,0,0,0.4)', padding: '10px', borderRadius: '5px' }}>
         <Typewriter text="Estás a punto de desbloquear la aventura final. Revisa tu inventario y confirma tu equipo." speed={30} />
       </div>
+
+      {synergyEvent && (
+        <div className="fade-in mb-3 text-pixel text-center" style={{ color: '#ffd43b', fontSize: '0.7rem', border: '1px dashed #ffd43b', padding: '10px', borderRadius: '8px' }}>
+          ✨ Evento Especial Desbloqueado: {synergyEvent} ✨
+        </div>
+      )}
       
       <ul className="inventory-list mt-3 mb-3">
         <li className="inventory-item">
@@ -115,10 +138,31 @@ const BossBattle = ({ onConfirm, onEdit, gameState }: Props) => {
         </li>
       </ul>
 
+      {wish && (
+        <div className="rpg-card mt-3 mb-3" style={{ background: 'rgba(232, 121, 249, 0.1)', borderColor: '#e879f9', padding: '10px' }}>
+          <h3 style={{ color: '#e879f9', fontSize: '0.7rem', marginBottom: '5px' }}>🌟 MISIÓN SECUNDARIA DETECTADA</h3>
+          <p className="text-pixel" style={{ fontSize: '0.65rem', color: '#e2e8f0', margin: 0 }}>"{wish}"</p>
+        </div>
+      )}
+
       {calculating ? (
-        <div className="panel mt-3 text-center" style={{ minHeight: '100px' }}>
+        <div className="panel mt-3 text-center" style={{ minHeight: '130px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <Typewriter text="Analizando sinergia del equipo..." speed={50} />
-          <div className="mt-3 text-pixel blink" style={{ color: '#ffd43b' }}>
+          
+          <div className="fade-in" style={{ animationDelay: '1.5s', animationFillMode: 'both' }}>
+            {isNervousHigh(gameState) ? (
+              <span className="text-pixel" style={{ color: '#ffb7b2', fontSize: '0.6rem' }}>Nervios detectados: 87%. Resultado: completamente normal.</span>
+            ) : (
+              <span className="text-pixel" style={{ color: '#51cf66', fontSize: '0.6rem' }}>Nivel de confianza: 100%. Todo en orden.</span>
+            )}
+          </div>
+          
+          <div className="fade-in" style={{ animationDelay: '2.5s', animationFillMode: 'both' }}>
+            {isEnergyRomantic(gameState) && <span className="text-pixel" style={{ color: '#ff66c4', fontSize: '0.6rem' }}>Energía romántica identificada.</span>}
+            {isEnergyAdrenaline(gameState) && <span className="text-pixel" style={{ color: '#ff922b', fontSize: '0.6rem' }}>Energía aventurera identificada.</span>}
+          </div>
+
+          <div className="mt-3 text-pixel blink" style={{ color: '#ffd43b', animationDelay: '3.5s', animationFillMode: 'both' }}>
             Calculando probabilidades...
           </div>
         </div>

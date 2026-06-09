@@ -245,7 +245,7 @@ export const dressCodeOptions = [
   { id: 'casual', name: 'Casual Chic', emoji: '👕', code: 'Modo Confort', desc: 'Funciona para todo, sin pretensiones pero con estilo.' },
   { id: 'elegant', name: 'Elegante', emoji: '👗', code: 'Modo Etiqueta', desc: 'Para impresionar. Bloquea la comida callejera, obvio.' },
   { id: 'adventurer', name: 'Aventurero', emoji: '🥾', code: 'Modo Supervivencia', desc: 'Ropa cómoda y botas. Requerido para volcanes y montañas.' },
-  { id: 'cosplay', name: 'Cosplay / Temático', emoji: '🦊', code: 'Modo Otaku', desc: 'Llamativo y divertido. Desbloquea extra vibes en lugares anime.' }
+  { id: 'comfy', name: 'Comfy / Deportivo', emoji: '🧘‍♀️', code: 'Modo Relax Total', desc: 'Ropa súper cómoda, leggings o buzo. Ideal para planes chill o caminatas.' }
 ];
 
 export const weatherOptions = [
@@ -362,6 +362,17 @@ export const missionOptions = [
     cost: 40
   },
   {
+    id: 'barrio_chino',
+    dest: 'Paseo por el Barrio Chino',
+    emoji: '🏮',
+    code: 'Ruta de Neón',
+    desc: 'Luces, cultura, snacks asiáticos y una vibra diferente.',
+    tags: ['ciudad', 'chill', 'comida', 'plan_corto'],
+    periods: ['late_afternoon', 'evening', 'night'] as const,
+    warnings: ['Requiere caminar bastante.'],
+    cost: 20
+  },
+  {
     id: 'cine',
     dest: 'Cine',
     emoji: '🍿',
@@ -371,6 +382,17 @@ export const missionOptions = [
     periods: ['late_afternoon', 'evening', 'night'] as const,
     warnings: [],
     cost: 30
+  },
+  {
+    id: 'legos',
+    dest: 'Tarde de armar Legos',
+    emoji: '🧩',
+    code: 'Modo Constructor',
+    desc: 'Un plan casero, chill, con mucha plática y creatividad.',
+    tags: ['chill', 'plan_largo'],
+    periods: ['morning', 'early_afternoon', 'late_afternoon', 'evening', 'night'] as const,
+    warnings: ['Se requiere paciencia y buen playlist.'],
+    cost: 15
   },
   {
     id: 'she_suggests_destination',
