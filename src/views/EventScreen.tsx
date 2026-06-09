@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { sfxClick, sfxSelect, sfxBuzz } from '../utils/audio';
 import type { GameState } from '../App';
 import Typewriter from '../components/Typewriter';
-import { getPlayerEnergy, getPlayerSong, isEnergyAdrenaline, isEnergyRomantic, isNervousHigh } from '../utils/memory';
+import { getPlayerSong, isEnergyAdrenaline, isEnergyRomantic, isNervousHigh } from '../utils/memory';
 
 interface Props {
   eventId: string;

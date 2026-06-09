@@ -61,11 +61,36 @@ const App = () => {
 
   const [audioInitialized, setAudioInitialized] = useState(false);
 
-  // No localStorage save/load logic needed
+  // Cargar estado inicial desde localStorage o usar default
   useEffect(() => {
-    // Intentionally empty or remove entirely. 
-    // Left empty here to just replace the block.
+    try {
+      const savedState = localStorage.getItem('invite98_gamestate');
+      const savedStep = localStorage.getItem('invite98_step');
+      
+      if (savedState) {
+        setGameState(JSON.parse(savedState));
+      }
+      if (savedStep) {
+        const step = parseInt(savedStep, 10);
+        if (!isNaN(step) && step !== 14) {
+          setCurrentStep(step);
+        }
+      }
+    } catch (e) {
+      console.error('Error loading state', e);
+    }
   }, []);
+
+  // Guardar estado cada vez que cambie
+  useEffect(() => {
+    if (currentStep !== 14) { // No guardar si ya terminó
+      localStorage.setItem('invite98_gamestate', JSON.stringify(gameState));
+      localStorage.setItem('invite98_step', currentStep.toString());
+    } else {
+      localStorage.removeItem('invite98_gamestate');
+      localStorage.removeItem('invite98_step');
+    }
+  }, [gameState, currentStep]);
 
   // A helper to initialize audio on first interaction
   const handleInteraction = () => {
@@ -79,9 +104,7 @@ const App = () => {
     setGameState(prev => ({ ...prev, [key]: value }));
   };
 
-  const nextStep = () => {
-    const next = currentStep + 1;
-    
+  const transitionTo = (next: number) => {
     // 1. Verificar si hay pregunta conversacional para este paso
     if (questionTriggers[next] !== undefined && !gameState.responses[conversationQuestions[questionTriggers[next]].id]) {
       setActiveQuestion(questionTriggers[next]);
@@ -109,11 +132,16 @@ const App = () => {
     setCurrentStep(next);
   };
 
+  const nextStep = () => {
+    transitionTo(currentStep + 1);
+  };
+
   const handleConversationAnswer = (questionId: string, answer: string) => {
-    setGameState(prev => ({
-      ...prev,
-      responses: { ...prev.responses, [questionId]: answer }
-    }));
+    setGameState(prev => {
+      const newState = { ...prev, responses: { ...prev.responses, [questionId]: answer } };
+      return newState;
+    });
+    
     if (questionPendingStep !== null) {
       const pendingNext = questionPendingStep;
       setActiveQuestion(null);
@@ -221,12 +249,10 @@ const App = () => {
         return <Destinations 
                   onNext={() => {
                     const mission = missionOptions.find(m => m.id === gameState.destId);
-                    if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe'))) {
-                      updateGameState('fuelId', null as any);
-                      goToStep(10); // SideQuests are now step 10
-                    } else {
-                      nextStep();
+                    if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe') || mission.tags.includes('sorpresa'))) {
+                      updateGameState('fuelId', 'she_chooses' as any); // Evita error de nulo y marca que el destino lo cubre
                     }
+                    nextStep();
                   }} 
                   gameState={gameState} 
                   updateState={updateGameState as any} 
@@ -236,16 +262,8 @@ const App = () => {
                   onNext={() => {
                     // Check if fuel should be skipped
                     const mission = missionOptions.find(m => m.id === gameState.destId);
-                    if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe'))) {
-                      updateGameState('fuelId', null as any);
-                      // Use event engine for custom routing too
-                      const ev = rollForEvent('after_fuel');
-                      if (ev) {
-                        setPendingStep(12);
-                        setActiveEvent(ev);
-                      } else {
-                        goToStep(12);
-                      }
+                    if (mission && (mission.tags.includes('comida') || mission.tags.includes('cena') || mission.tags.includes('cafe') || mission.tags.includes('sorpresa'))) {
+                      transitionTo(12);
                     } else {
                       nextStep(); // Fuel is 11
                     }

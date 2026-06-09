@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { WHATSAPP_PHONE, avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions, inventoryOptions, weatherOptions, sideQuestOptions, dressCodeOptions } from '../data/gameData';
+import { WHATSAPP_PHONE, avatarOptions, transportOptions, dayOptions, missionOptions, fuelOptions, weatherOptions, sideQuestOptions, dressCodeOptions } from '../data/gameData';
 import type { GameState } from '../App';
 import { sfxVictory } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
@@ -42,7 +42,6 @@ const Victory = ({ gameState, onRestart }: Props) => {
   }, []);
 
   const avatar = avatarOptions.find(a => a.id === gameState.avatarId);
-  const inventory = inventoryOptions.find(i => i.id === gameState.inventoryId);
   const weather = weatherOptions.find(w => w.id === gameState.weatherId);
   const transport = transportOptions.find(t => t.id === gameState.transportId);
   const day = dayOptions.find(d => d.id === gameState.dayId);

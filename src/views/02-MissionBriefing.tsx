@@ -26,8 +26,6 @@ const evasivePhrases = [
 const MissionBriefing = ({ onAccept, onReject, gameState }: Props) => {
   const [rejectAttempts, setRejectAttempts] = useState(0);
   const [rejectPhrase, setRejectPhrase] = useState("");
-  const [btnPosition, setBtnPosition] = useState<{ x: number; y: number } | null>(null);
-  const [isEvading, setIsEvading] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
 
   const handleAccept = (e: React.MouseEvent | React.TouchEvent) => {
@@ -36,15 +34,6 @@ const MissionBriefing = ({ onAccept, onReject, gameState }: Props) => {
     onAccept();
   };
 
-  const moveButton = useCallback(() => {
-    // Usar porcentajes (vw, vh) para garantizar que siempre esté visible sin importar el tamaño en px
-    const newX = Math.max(5, Math.floor(Math.random() * 60)); // 5vw a 65vw
-    const newY = Math.max(10, Math.floor(Math.random() * 80)); // 10vh a 90vh
-
-    setBtnPosition({ x: newX, y: newY });
-    setIsEvading(true);
-  }, []);
-
   const handleEvade = useCallback(() => {
     if (rejectAttempts >= 9) return;
 
@@ -52,14 +41,7 @@ const MissionBriefing = ({ onAccept, onReject, gameState }: Props) => {
     const newAttempts = rejectAttempts + 1;
     setRejectAttempts(newAttempts);
     setRejectPhrase(evasivePhrases[rejectAttempts % evasivePhrases.length]);
-
-    if (newAttempts >= 9) {
-      setBtnPosition(null);
-      setIsEvading(false);
-    } else {
-      moveButton();
-    }
-  }, [rejectAttempts, moveButton]);
+  }, [rejectAttempts]);
 
   const handleRejectClick = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
@@ -69,12 +51,6 @@ const MissionBriefing = ({ onAccept, onReject, gameState }: Props) => {
       sfxClick();
       onReject();
     } else {
-      handleEvade();
-    }
-  };
-
-  const handleRejectHover = () => {
-    if (rejectAttempts < 9) {
       handleEvade();
     }
   };
@@ -132,39 +108,21 @@ const MissionBriefing = ({ onAccept, onReject, gameState }: Props) => {
             </p>
           )}
 
-          {/* Reject button: either in normal flow or floating */}
-          {isEvading && btnPosition ? (
-            // Floating evasive button - rendered via portal-like fixed positioning
+          {/* Reject button */}
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0', minHeight: '50px' }}>
             <button
               className="btn-retro evasive"
-              onMouseEnter={handleRejectHover}
               onClick={handleRejectClick}
-              onTouchStart={handleRejectClick}
               style={{
-                position: 'fixed',
-                left: `${btnPosition.x}vw`,
-                top: `${btnPosition.y}vh`,
-                zIndex: 9999, // Super high z-index para que nada lo tape
-                transition: 'none',
-                whiteSpace: 'nowrap',
+                width: gameOver ? '80%' : 'auto',
+                transform: gameOver ? 'none' : `scale(${Math.max(0.2, 1 - rejectAttempts * 0.1)})`,
+                transition: 'transform 0.2s',
+                opacity: rejectAttempts > 0 && !gameOver ? Math.max(0.4, 1 - rejectAttempts * 0.08) : 1
               }}
             >
               Huir de la misión
             </button>
-          ) : (
-            // Normal inline button
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0' }}>
-              <button
-                className="btn-retro evasive"
-                onMouseEnter={handleRejectHover}
-                onClick={handleRejectClick}
-                onTouchStart={handleRejectClick}
-                style={{ width: gameOver ? '80%' : 'auto' }}
-              >
-                Huir de la misión
-              </button>
-            </div>
-          )}
+          </div>
         </div>
       )}
     </div>

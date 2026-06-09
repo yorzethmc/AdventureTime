@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import type { GameState } from '../App';
 import { sfxClick } from '../utils/audio';
 import Typewriter from '../components/Typewriter';
-import { getPlayerNervousness, getPlayerEnergy, getPlayerWish, isNervousHigh, isEnergyRomantic, isEnergyAdrenaline } from '../utils/memory';
+import { getPlayerWish, isNervousHigh, isEnergyRomantic, isEnergyAdrenaline } from '../utils/memory';
 
 interface Props {
   onConfirm: () => void;
